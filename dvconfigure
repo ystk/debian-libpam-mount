@@ -1,0 +1,7 @@
+#!/bin/sh -ex
+
+if [ ! -e configure ]; then
+	./autogen.sh;
+fi;
+mkdir -p var/run;
+./configure CFLAGS=-ggdb3 --localstatedir="$PWD/var" "$@";

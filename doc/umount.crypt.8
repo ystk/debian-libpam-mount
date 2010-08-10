@@ -1,0 +1,22 @@
+.TH umount.crypt 8 "2008\-10\-09" "pam_mount" "pam_mount"
+.SH Name
+.PP
+umount.crypt - unmount a dm\-crypt encrypted volume
+.SH Syntax
+.PP
+\fBumount.crypt\fP [\fB-n\fP] \fIdirectory\fP
+.SH Options
+.TP
+\fB\-f\fP
+This option is ignored (originally is "force unmount for NFS").
+.TP
+\fB\-n\fP
+Do not update /etc/mtab.
+.TP
+\fB\-r\fP
+Try mounting read\-only if unmounting fails. This option is currently not
+implemented and is ignored.
+.SH Description
+.PP
+umount.crypt will unmount \fIdirectory\fP and disassociates the underlying
+crypto device, and loop device if such was used.

@@ -1,0 +1,4 @@
+# pam_mount helper applications
+/sbin/umount.crypt	--	system_u:object_r:mount_exec_t
+/sbin/mount.crypt	--	system_u:object_r:mount_exec_t
+/usr/sbin/pmvarrun	--	system_u:object_r:pam_mount_exec_t

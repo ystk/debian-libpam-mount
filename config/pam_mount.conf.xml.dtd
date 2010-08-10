@@ -1,0 +1,91 @@
+<!ELEMENT pam_mount
+	(volume*,debug?,luserconf?,mntoptions*,
+	path?,logout?,mkmountpoint?,fsck?,cifsmount?,
+	smbmount?,smbumount?,ncpmount?,ncpumount?,fusemount?,
+	fuseumount?,fd0ssh?,ofl?,umount?,
+	lclmount?,cryptmount?,nfsmount?,pmvarrun?,
+	msg-authpw?,msg-sessionpw?)>
+<!ELEMENT debug EMPTY>
+<!ATTLIST debug
+	enable CDATA #IMPLIED>
+<!ELEMENT mkmountpoint EMPTY>
+<!ATTLIST mkmountpoint
+	enable CDATA #IMPLIED
+	remove CDATA #IMPLIED
+>
+<!ATTLIST fsckloop
+	device CDATA #IMPLIED
+>
+<!ELEMENT luserconf EMPTY>
+<!ATTLIST luserconf
+	name CDATA #REQUIRED
+>
+<!ELEMENT mntoptions EMPTY>
+<!ATTLIST mntoptions
+	allow CDATA #IMPLIED
+	deny CDATA #IMPLIED
+	require CDATA #IMPLIED
+>
+<!ELEMENT path (#PCDATA)>
+<!ELEMENT fsck (#PCDATA)>
+<!ELEMENT cifsmount (#PCDATA)>
+<!ELEMENT smbmount (#PCDATA)>
+<!ELEMENT smbumount (#PCDATA)>
+<!ELEMENT ncpmount (#PCDATA)>
+<!ELEMENT ncpumount (#PCDATA)>
+<!ELEMENT fusemount (#PCDATA)>
+<!ELEMENT fuseumount (#PCDATA)>
+<!ELEMENT fd0ssh (#PCDATA)>
+<!ELEMENT umount (#PCDATA)>
+<!ELEMENT lclmount (#PCDATA)>
+<!ELEMENT cryptmount (#PCDATA)>
+<!ELEMENT nfsmount (#PCDATA)>
+<!ELEMENT pmvarrun (#PCDATA)>
+<!ELEMENT volume ((and|or|xor|not|user|uid|gid|pgrp|sgrp)?)>
+<!ELEMENT and ((and|or|xor|not|user|uid|gid|pgrp|sgrp)*)>
+<!ELEMENT or ((and|or|xor|not|user|uid|gid|pgrp|sgrp)*)>
+<!ELEMENT xor ((and|or|xor|not|user|uid|gid|pgrp|sgrp),(and|or|xor|not|user|uid|gid|pgrp|sgrp))>
+<!ELEMENT not (and|or|xor|not|user|uid|gid|pgrp|sgrp)>
+<!ELEMENT user (#PCDATA)>
+<!ELEMENT uid (#PCDATA)>
+<!ELEMENT gid (#PCDATA)>
+<!ELEMENT pgrp (#PCDATA)>
+<!ELEMENT sgrp (#PCDATA)>
+<!ATTLIST user
+	icase (0|1|yes|no|true|false) "no"
+>
+<!ATTLIST pgrp
+	icase (0|1|yes|no|true|false) "no"
+>
+<!ATTLIST sgrp
+	icase (0|1|yes|no|true|false) "no"
+>
+<!-- invert-* attributes are deprecated -->
+<!ATTLIST volume
+	user CDATA #IMPLIED
+	invert (0|1) "0"
+	uid CDATA #IMPLIED
+	pgrp CDATA #IMPLIED
+	gid CDATA #IMPLIED
+	sgrp CDATA #IMPLIED
+	noroot CDATA #IMPLIED
+	fstype CDATA #IMPLIED
+	server CDATA #IMPLIED
+	path CDATA #REQUIRED
+	mountpoint CDATA #REQUIRED
+	ssh (0|1|yes|no|true|false) "no"
+	options CDATA #IMPLIED
+	cipher CDATA #IMPLIED
+	fskeycipher CDATA #IMPLIED
+	fskeyhash CDATA #IMPLIED
+	fskeypath CDATA #IMPLIED
+>
+<!ELEMENT msg-authpw (#PCDATA)>
+<!ELEMENT msg-sessionpw (#PCDATA)>
+<!ELEMENT logout EMPTY>
+<!ATTLIST logout
+	wait CDATA "0"
+	hup (0|1|yes|no|true|false) "no"
+	term (0|1|yes|no|true|false) "no"
+	kill (0|1|yes|no|true|false) "no"
+>

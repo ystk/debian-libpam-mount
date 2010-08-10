@@ -1,0 +1,757 @@
+
+For details, see the history as recorded in the git repository.
+
+HEAD
+====
+
+
+v2.5 (August 10 2010)
+=====================
+Changes:
+- mount.crypt: fix incorrect processing of binary files in keyfile passthrough
+- call mount.crypt by means of mount -t crypt (selinux), same for umount
+- reorder the default path to search in /usr/local first, then /usr, /
+- config: add missing fd0ssh command to restore volumes using ssh
+- ofl is now run as a separate process (selinux policy simplification)
+
+
+v2.4 (June 26 2010)
+===================
+Notes:
+- see doc/bugs.txt for cryptsetup behavior that impacts
+  pam_mount users since version 2.0
+- recommending use of device-mapper >= 1.02.48 to avoid a race
+
+Fixes:
+- umount.crypt: fix use of a wrong field for smtab/cmtab staleness check
+Changes:
+- make libcryptsetup truly optional at compile-time
+  (it was only claimed in the doc, but not fully realized until now)
+- make libcrypto truly optional at compile-time
+  (this had once worked in pam_mount 0.x, now it does again)
+
+
+v2.3 (May 19 2010)
+==================
+Fixes:
+- umount.crypt had erroneously mounted instead of umounted
+
+
+v2.2 (May 16 2010)
+==================
+Fixes:
+- mount.crypt: fix memory scribble crash when crypto device could
+  not be initialized
+- mount.crypt: do not fail when unlocking key slot other than #0
+- fusermount is now called with supplementary groups initialized
+- rdconf: do not warn about missing fskeyhash when no fskey specified
+- mount: prefer sysv mount API over bsd
+- pmt-ehd: reword help text for -k option
+- pmt-ehd: apply default value for -k option
+- pmt-ehd: fix fskey generation which was pegged at 256 bits
+- pmt-ehd: avoid needless overtruncation/sparsifying
+- pmt-ehd: zero LUKS header to avoid setup failure of PLAIN volume
+Changes:
+- pmt-ehd: speed up writing random data
+- pmt-ehd: reword help text for -k option
+- mount.crypt: ignore cmtab update errors
+- mount.crypt: add support for keyfile passthru using -ofsk_cipher=none
+- doc: document mount.crypt's -o hash option
+- mount.crypt: warn on ignored options
+
+
+v2.1 (May 02 2010)
+==================
+Fixes:
+- config: rdconf1 static data had unclosed %(if) tags
+- config: rdconf1 static data had extraneous %(OPTIONS) parameter
+
+
+v2.0 (April 20 2010)
+====================
+Changes:
+- mount.crypt: make use of libcryptsetup
+- cmtab is now stored below localstatedir (usually /var/run)
+- use HXformat2. This invalidates old constructs like %(before=\"-o\"...),
+  which need to be replaced with the new syntax. (See below.)
+
+In general, the old syntax was only used by commands Note to updaters: As the
+old syntax %(after=...) %(before=...) %(ifempty=...) %(ifnempty=...)
+%(lower=...) %(upper=...) only appeared in commands, and commands are not part
+of the default config file anymore since v1.0~15^2~15, there should be little
+worry. The configuration options in question are <cifsmount>, <cryptmount>,
+<cryptumount>, <fd0ssh>, <fsck>, <fusemount>, <fuseumount>, <lclmount>,
+<nfsmount>, <ncpmount>, <ncpumount>, <pmvarrun>, <smbmount>, <smbumount>
+<umount> and should normally not be needed in pam_mount.conf.xml.
+
+
+v1.36 (April 13 2010)
+====================
+Changes:
+- cope better with cryptsetup's assumption that keysize=256
+- augment doc/bugs.txt about caveats with cryptsetup create
+
+
+v1.35 (April 10 2010)
+=====================
+Fixes:
+- avoid a mlock(NULL) when there is no auth token
+Changes:
+- print error code when mkmountpoint failed
+- print warning when cmtab is not creatable
+
+
+v1.34 (April 08 2010)
+=====================
+Changes:
+- update for libHX 3.4
+Fixes:
+- do decrease the login refcount on logout when no volumes are defined
+
+
+v1.33 (January 10 2010)
+=======================
+Fixes:
+- avoid multi-free of auth token when pam_mount is rerun in a PAM stack
+- avoid NULL dereference when there is an empty line in mtab
+
+
+v1.32 (September 21 2009)
+=========================
+Fixes:
+- luserconf: fix skipping luser volume mounting
+- config: allow arbitrary source paths for tmpfs
+
+
+v1.31 (September 02 2009)
+=========================
+Fixes:
+- pam_mount: fix a potential strlen(NULL) on login
+
+
+v1.30 (August 27 2009)
+======================
+Fixes:
+- pam_mount: avoid crash in sudo by not calling setenv() with NULL
+- pam_mount: unwind krb5 environment info at the right time
+- umount.crypt: do not remove entry from /etc/mtab twice
+- doc: mount.crypt has no defaults for fsk_cipher and fsk_hash
+- doc: pmt-ehd defaults to using SHA1 hash
+- doc: mention preferred location of <debug>
+Changes:
+- config: move <debug> to top
+Enhancements:
+- luserconf: delayed parsing and mounting of luserconf volumes
+
+
+v1.27 (July 01 2009)
+====================
+Changes:
+- mounting: stdout from mount programs is now discarded
+
+
+v1.26 (June 19 2009)
+====================
+Fixes:
+- config: do parse <cryptumount> elements from .xml
+Enhancements:
+- mount: pass fstype to NFS mount program
+- config: map "nfs4" fstype to NFSMOUNT
+- pam_mount: PAM function return code audit
+- config: warn about ignored "server" attribute in <volume>
+- config: print error message on config file syntax error
+
+
+v1.25 (May 09 2009)
+===================
+Fixes:
+- fix splitting of "NTDOMAIN\username" strings
+Enhancements:
+- config: broaden variable expansion to resolve a case where it
+  did not do expected expansion with AUFS
+
+
+v1.24 (April 23 2009)
+=====================
+Fixes:
+- src: fix one uninitialized value
+- mount.crypt: write options, not "defaults" to /etc/mtab
+- mount.crypt: keysize truncation must happen later
+
+
+v1.22 (April 05 2009)
+=====================
+Changes:
+- mount.crypt: pass -o ro/rw down to mount program
+- mount.crypt: support for -o remount
+- mount.crypt: support overriding keysize
+
+
+v1.21 (March 17 2009)
+=====================
+Fixes:
+- mount.crypt: must pass -s option to cryptsetup
+  (otherwise its odd default of truncating the key kicks in)
+Documentation:
+- mount.crypt: add "Deprecated Mount options" section to manpage
+
+
+v1.20 (March 01 2009)
+=====================
+Fixes:
+- pam_mount: fix a double free that can happen when stale entries are in cmtab
+- pam_mount: first-time overriding of mntoptions failed to work
+
+
+v1.19 (February 27 2009)
+========================
+Fixes:
+- pmvarrun: do not segfault when no username is specified (corner-case)
+- pmvarrun: recognize internal _PMT_DEBUG_LEVEL env var
+- mtab: automatically ignore and remove stale entries from cmtab
+- pam_mount: fix unexpected termination after pam_mount ran
+- doc: list support contacts in man page
+
+
+v1.18 (February 07 2009)
+========================
+Fixes:
+- mount.crypt: warn on insecure ciphers/hashes
+- pam_mount: fix case-insensitive sgrp matching for <volume>
+- pam_mount: additional safety check for NULL 'converse' structs
+- doc: add sudo to the Known Bugs list
+
+
+v1.17 (January 26 2009)
+=======================
+Fixes:
+- mount.crypt: resolve valgrind warnings (incapability to umount)
+- mount.crypt: correct exit status on mount
+- mtab: do not fail if file not found
+- pam_mount: look into cmtab when checking for already-mounted volumes
+
+Features:
+- ports: FreeBSD loop device (MD) support
+- ports: NetBSD loop device (VND) support
+- ports: NetBSD crypto device (CGD) support
+
+
+v1.16 (January 24 2009)
+=======================
+Fixes:
+- nucrypt2: resolve compiler warnings
+- nucrypt2: avoid NULL deref in pmt_cmtab_add
+- mount.crypt: avoid random deref in bogus printf
+- mount.crypt: only use mount -i on __linux__
+- mount.crypt: avoid umount attemps when not mounted
+
+
+v1.15 (January 23 2009)
+=======================
+Features:
+- mount.crypt: use /etc/cmtab file to keep crypto mount info
+
+Fixes:
+- mount.crypt/pmt-ehd: flush tty input queue before prompting for password
+
+
+v1.10 (January 22 2009)
+=======================
+Fixes:
+- crypto: add missing return statements during loop+crypto setup
+- pmt-ehd: fix return statements
+- ehd: do not feed password's '\0' into openSSL
+
+
+v1.9 (January 13 2009)
+======================
+Fixes:
+- umount was called on anything but the last session
+- ofl: fix per-task fd lookup (again)
+- luserconf: re-enforce three-wall option checks
+
+Changes:
+- doc: remove old use_first_pass from doc
+- doc: add version string and reldate to manpages
+
+
+v1.8 (January 07 2009)
+======================
+- doc: add manpage aliases crypt{,o}_LUKS
+- mount.crypt: fix return code regression
+- logging: <debug> should not turn off errors
+- src: traverse non-whitespace properly, check for '\0'
+- pam_mount: fix segfault in case of an undefined converse function (e.g. cron)
+- mount.crypt: fix segfault when password is NULL
+- umount.crypt: fix segfault when path is not mounted
+
+Additions:
+- ports: pam_mount.so compiles on FreeBSD (7.1)
+
+
+v1.7 (January 01 2009)
+======================
+Fixes:
+- spawns: correctly interpret return codes when signalled
+- pmt-ehd: fix a wrong return value in the error path
+- src: close some leaking fds
+- src: resolve memory leaks from HXformat use
+- mount.crypt: continue on umount errors
+- rdconf: silence debug messages if debug turned off
+
+Changes:
+- signals: block SIGPIPE during the entire pam_mount run time
+- signals: use refcounted SIGCHLD
+- src: use libHX 2.2's proc interface
+
+
+v1.6 (December 27 2008)
+=======================
+- update to libHX 2.0
+- block-linux: close a leaking fd
+- config: optionally install DTD and instructions for verification
+- config: resynchronize DTD with XML
+- build: autotools fixes, make `make dist` work
+- pam_mount.so now builds on BSD
+
+
+v1.5 (December 07 2008)
+=======================
+- mount.crypt: support fsck mount option
+
+
+v1.4 (November 24 2008)
+=======================
+- mount.crypt: fix is_luks detection
+- mount.crypt: add warnings for unneeded/unsupported options
+- build: supply "crypto_LUKS" fstype symlinks
+
+
+v1.3 (November 16 2008)
+=======================
+- ofl: fix per-task fd lookup
+- mount.crypt: -v takes no argument
+- mount.crypt: use original container name as dmdevice name
+- mount.crypt: reduce output on wrong password
+- mount.crypt: only require -o cipher when really needed
+- always proceed with mount even when a password is missing
+
+
+v1.2 (October 23 2008)
+======================
+- pmt-ehd: autodetect size for block devices
+- config: add missing %(CIPHER) to CMD_CRYPTMOUNT command line
+- mount.crypt: allow -v to be set through -o verbose too
+  (that way you can enable it per-<volume>)
+- mount.crypt: pass -c to cryptsetup also for LUKS
+- config: expand placeholders in the <volume options="..."> attribute
+- config: make %(GROUP) variable working
+
+
+v1.1 (October 20 2008)
+======================
+- config: fix unfortunate inversion in user_in_sgrp
+- config: fix unintentional inversion in mntoptions deny processing
+- mount.crypt: allow specification of a hash alg
+- pmt-ehd: add -D option for debugging
+- mount.crypt: propagate -o fstype=x to mount(8)
+- pmt-ehd: double-ask for password
+- config: remove bogus user check for ncpfs
+- pmt-ehd: fix segfault when using -c option
+- pmt-ehd: add -h option to pick hash for key derivation
+- pmt-ehd: default to using SHA1 for hash
+- mount.crypt: do not default to any cipher/hash
+- pmt-ehd: print <volume> line after creation
+- config: introduce <volume fskeyhash=""> attribute
+- config: introduce <volume cipher=""> attribute
+
+
+v1.0 (October 12 2008)
+======================
+- convert_pam_mount_conf.pl: ignore unknown commands
+- fix leftover assertion in crypto.c
+- remove legacy truecrypt 4.x support
+- deprecate cryptoloop (unsafe for journalled fs)
+- remove BSD mntcheck code
+- remove BSD mntagain leftovers
+- remove BSD mount_ehd/vnconfig scripts
+- remove code that set up a loop device for fsck
+  (fsck can operate on normal files)
+- new crypto helper: pmt-ehd replaces scripts/mkehd
+- new crypto helper: mount.crypt is now a proper program
+- add %(GROUP) variable
+- remove convert_pam_mount.conf.pl
+
+
+v0.49 (October 07 2008)
+=======================
+- convert_pam_mount_conf.pl: ignore unknown commands
+- fix leftover assertion in crypto.c
+- remove legacy truecrypt 4.x support
+- deprecate cryptoloop (unsafe for journalled fs)
+- revert "mount.crypt: default to aes-cbc-essiv:sha256/sha512"
+- fix invalid pointer causing crash on fskey decryption
+
+
+v0.48 (September 10 2008)
+=========================
+- upgrade for libHX 1.25
+  (this fixes a potential crash in the fskey decryption routine)
+- move more documentation from pam_mount.conf.xml into pam_mount.conf.5
+
+
+v0.47 (September 04 2008)
+=========================
+This release incorporates a security fix (item 3 on the list).
+All administrators who have enabled <luserconf> in the configuration
+file should upgrade. A workaround is to comment out <luserconf>.
+
+- mount.crypt: add missing null command to conform to sh syntax
+  (SF bug #2089446)
+- conf: fix printing of strings when luser volume options were not ok
+- conf: re-add luserconf security checks
+- add support for encfs 1.3.x (1.4.x already has been in for long)
+- conf: add the "noroot" attribute for <volume> to force mounting with
+  the unprivileged user account (required for FUSE filesystems)
+- replace fixed-size buffers and arrays with dynamic ones (complete)
+
+
+v0.45 (August 31 2008)
+======================
+- fix double-freeing the authentication token
+- use ofl instead of lsof/fuser
+- kill-on-logout support (terminate processes that would stand in the
+  way of unmounting)
+- mount.crypt: auto-detect necessity for running losetup
+- replace fixed-size buffers with dynamic ones (first part)
+
+
+v0.44 (August 16 2008)
+======================
+Bugfixes only.
+- mount.crypt: fix option slurping (SF bug #2054323)
+- properly handle simple sgrp config items (Debian bug #493497)
+- src: correct error check in run_lsof()
+- conf: check that slash follows home tilde
+- conf: wildcard inadvertently matched root sometimes
+
+
+v0.43 (July 16 2008)
+====================
+A few accumulated patches, but no real new glaring features.
+- remove davfs support
+- pass fsck definition from pam_mount.conf.xml to mount.crypt
+- document pam_mount.conf.xml defaults
+- do not call fsck from within pam_mount for encrypted devices,
+  let mount.crypt do it
+
+
+v0.41 (June 17 2008)
+====================
+This is a stable release, no new features, bugfixes only.
+Fixes regressions found in 0.39 and 0.40. Most important changes:
+- bypass /sbin/mount for mount.crypt
+- umount.crypt: fix expression syntax for _PMT_DEBUG_LEVEL
+- re-add support for user="*" wildcard
+- add missing pgrp/sgrp attribute handling for simple user control
+- mount.crypt: handle arbitrary argument order
+- correct extended sgrp handling
+- manpages: add missing description for <fsck>, and reorder <path>
+
+
+v0.40 (June 11 2008)
+====================
+- the documentation in pam_mount.conf.xml has been reworked and
+  split off into pam_mount.conf(5).
+- extensive user selection for <volume> (revised)
+- case-insensitive matching for user, pgrp, sgrp
+- fixed segfault when more than one volume was defined
+
+
+v0.39 (May 28 2008)
+===================
+- extended user selection for <volume>
+- fix an unwanted inversion for handling <options allow=" (nonempty) ">
+- store per-volume option list in ordered form --
+  essentially fixes the problem of "user" (implies noeexec)
+  overriding "exec"
+
+
+v0.38 (May 18 2008)
+===================
+- fix null pointer deref (from new UID/GID range support)
+- mount.crypt uses normal sleep from coreutils again
+
+
+v0.37 (May 17 2008)
+===================
+- truecrypt 5.x is not supported because the truecrypt CLI component
+  that pam_mount requires was removed
+- <volume> tag in pam_mount.conf.xml supports UID and GID ranges now
+- avoid printing a line of garbage into logs
+
+
+v0.35.1 (April 10 2008)
+=======================
+- fix HAVE_LIBCRYPTO regression;
+  crypto was always disabled even if openssl present
+
+
+v0.35 (April 06 2008)
+=====================
+- mount.crypt: fix loop device detection
+- mount.crypt: wait for dm devices to show up
+- fixed: mount flag and value were one argument
+- pmvarrun: support unprivileged mode
+- Support for SSH keyboard-interactive authenticated volumes
+- documentation updates
+
+
+v0.33 (February 22 2008)
+========================
+- notify about unknown options in /etc/pam.d/*
+- support "debug" option for pam_mount in /etc/pam.d/*
+- mount.crypt: detect loop devices by major number
+- remove trailing comma from mount options
+
+
+v0.32 (December 06 2007)
+========================
+- remove unintended zeroing of variable
+- rip out mntagain hack
+
+
+v0.31 (December 01 2007)
+========================
+Fixed parsing of old-style pam_mount.conf with spaces in group names,
+copy-and-paste typos and a missing return value. Added workaround for
+CIFS volumes within NFS mounts with "root_squash" option.
+
+- allow --keyfile to be used for non-LUKS too
+- add workaround for CIFS mounts within root_squashed NFS
+- luksClose is the same as Remove (in umount.crypt)
+- fix copy-and-paste error in converter script
+- convert "local" fstype entries from old configuration format correctly.
+- fixed parsing of old pam_mount.conf with spaces in group names
+- fixed: When no volumes were to be mounted, return value
+  was not PAM_SUCCESS.
+
+
+v0.29 (September 27 2007)
+=========================
+An uninitialized array and a copy-and-paste error were corrected in
+the recently introduced process spawn code.
+
+- explicitly initialize fd array (spawn.c)
+- fix a copy-and-paste typo during dup2() (spawn.c)
+
+
+v0.28 (September 27 2007)
+=========================
+A hotfix for an incorrect printf format specification in pmvarrun.
+Also installs config files by default now.
+
+- install pam_mount.conf.xml by default
+- add --with-selinux configure option to install selinux files
+- fix crash due to printf arguments in pmvarrun.c
+
+
+v0.27 (September 26 2007)
+=========================
+This release fixes a crash on logout with su by using a fixed $PATH
+to work around broken login programs. MSAD usernames are now accepted
+in pmvarrun. The libglib dependency has been dropped.
+
+- add luserconf conversion note to convert_pam_mount_conf.pl
+- do not print "mount errors" if there won't be any
+- allow MSAD usernames (with spaces and backslash) in pmvarrun
+- quick-terminate if there is nothing to do on closing session
+- fix crash on logout with su (unsigned loop underflow)
+- drop libglib dependency
+- always use fixed $PATH
+
+
+v0.26 (September 20 2007)
+=========================
+Luks argument ordering, mountpoint creation as user, and the
+converter script were corrected. The "nullok" and --keyfile options
+were added.
+
+- revert r290 which incorrectly changed the luks argument order
+- --keyfile option added to mount.crypt
+- improved error reporting in the config converter script
+- do not literally copy the special-meaning single dashes
+  in converter script
+- fix mount.crypt inner shell syntax
+- add "nullok" option
+- fix a missing user identity switch after mkmountpoint'ing
+
+
+v0.21 (September 17 2007)
+=========================
+Some mount helpers needed a different option passing method.
+Stacking of loop devices is now avoided, and pam_mount will not ask
+for a password if no volumes are to be mounted. The documentation has
+been updated to include PAM module stacking (e.g. when using pam_ldap
+with pam_mount).
+
+- silence unwanted error message (fallout from r240)
+- add "Known Bugs and Issues" documentation
+- more documentation - How to stack PAM modules without pam_stack
+- option passing to some mount helpers needs to be different
+- avoid stacking of loop devices
+- do not ask for password if no volumes found
+
+
+v0.20 (September 05 2007)
+=========================
+This release adds extra options regarding pam_mount behavior
+(messages and mount points).
+
+- do not use absolute paths, search $PATH instead for programs
+- add pam_mount.conf to .conf.xml converter
+- "sufficient" keyword documentation
+- misc cryptmount fix
+- pass down readonly flag to luksOpen
+- add option to retain automatically created mountpoints
+- create mountpoint as user if possible (e.g. if /home/USER
+  already exists and your volume is /home/USER/myvol)
+- build fixes, making it work OOTB again with FC6 and Autoconf 2.59
+- allow changing the password prompt
+- add an overview of pam_mount options (options.txt)
+- implement the "soft_try_pass" option
+
+
+v0.19 (July 04 2007)
+====================
+pam_mount now uses an XML config file, which also has a few new
+variables and options. Support for truecrypt was added.
+
+- pam_mount switched to an XML configuration.
+- NT domain placeholders
+- properly detect loop64 support
+- split group matching into multiple attributes
+- add an "invert" attribute
+- remove pam_mount.la from `make install`ed directory
+- partial davfs support
+- added truecrypt support
+
+
+v0.18 (September 07 2006)
+=========================
+A crash on x86_64 has been fixed. pam_mount now changes to the root
+directory before attempting to (un)mount.
+
+- change to / before attempting mount
+- check return value in xmemdup()
+- fix segfault on x64: Do not reuse va_lists (found by Celestar)
+
+
+v0.17 (August 06 2006)
+======================
+This release fixes memory corruption issues and improper zeroing.
+
+- use standard allocators
+- fix memory corruption issue
+- enhance debugging messages with file/line
+- fix improper zeroing (deceived as memory corruption)
+
+
+v0.16 (July 30 2006)
+====================
+The GDM SIGCHLD workaround handling has been improved, essential
+environment variables for FUSE daemons are now set, and configure has
+two new options (--slibdir and --sbindir).
+
+- SIGCHLD handling updated
+- set important environment variables for fuse daemons
+- added new --slibdir and --ssbindir options to configure
+- documentation updates
+
+
+v0.15 (July 26 2006)
+====================
+- mount.crypt and umount.crypt are installed to /sbin rather
+  than /usr/sbin; /bin/mount only looks into /sbin
+- KRB5 credentials are now set in the environment
+- fix XDM crash, for GCC >= 4.x
+- disable debug output by default (confused gksu) [sf bug #1524325]
+- do FUSE mounts done unprivileged [sf bug #1489657 and ML]
+- fixed: /bin/login sends SIGHUP/SIGTERM to outstanding session
+  processes after PAM completed; this killed fuse daemons
+- work around XDM crash (symbol clash), for GCC <= 3.x;
+  the proper solution would be that XDM be NOT compiled with -rdynamic
+- properly truncate /var/run/pam_mount/YOURNAME files [sf bug #1503246]
+
+
+v0.13 (April 01 2006)
+=====================
+Before SVN, patchsets were used.
+
+[patch 01/11] January 28 2006
+- src/readconfig.c, mount.c: mount volumes with user credentials,
+  not as root
+- src/mount.c: add a swift error message for people using broken distros
+
+[patch 02/11] January 28 2006
+- config/pam_mount.conf, readconfig.c: lsof is in /usr/bin
+
+[patch 03/11] February 23 2006
+- dry/pam_mount.spec: fixed: forgot to clean out unpackaged files
+
+[patch 04/11] February 27 2006
+- config/pam_mount.conf: update some examples
+
+[patch 05/11] Februrary 27 2006
+- scripts/mount.crypt: fix SED expression
+
+[patch 06/11] March 04 2006
+- src/mount.c: add an extra hint for old distros
+
+[patch 07/11] March 19 2006
+- src/*.h: fix position of #include's, they need to be before extern "C".
+
+[patch 08/11] March 19 2006
+- config/pam_mount.conf: fix examples for shares with spaces
+
+[patch 09/11] March 19 2006
+- src/pam_mount.c: relookup user (for LDAP)
+
+[patch 10/11] April 01 2006
+- use own SIGCHLD handler during pam_mount operations (try to fix a
+  quirk with GDM)
+
+[patch 11/11] April 01 2006
+- configure: enforce straight /lib position for pam_mount Linux
+
+
+v0.12.2 (January 31 2006)
+=========================
+Mount smbfs and cifs mounts with ownership belonging to the user
+rather than root.
+
+
+v0.12.0 (January 11 2006)
+=========================
+This version fixes an fd leak, expansion problems with @group and a
+wrong inversion. The smb/ncp filesystem types have been superseded by
+smbfs/ncpfs. Support for secondary "@@groups" was added.
+
+
+v0.11 (December 28 2005)
+========================
+- fix some memory leaks, unterminated strings, extra trailing
+  slashes, double frees
+- fixed: wildcards were not expanded for "@group"s
+- account for trailing slashes and path resolution in umount.crypt
+
+
+v0.10 (November 18 2005)
+========================
+- support ANY [kernel] filesystem (yes, finally) -- includes tmpfs,
+  fuse mounts and --bind operations.
+- merged various patches and fixes by Bastian Kleineidam
+- handle symlinks better (read: resolve them, so that the result
+  matches /bin/mount's resolving behavior)
+- implemented group volumes, to be used by "volume @xyz ..."
+- cleaned the code up here and there

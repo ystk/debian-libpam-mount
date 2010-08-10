@@ -1,0 +1,36 @@
+
+o unit tests
+
+o passwdehd needs work.
+
+o make a test system that takes XML and creates  pam_mount.conf, images,
+efsk's, mnt points and check script.
+
+o how can I determine target user name when root su's to another user
+or when I ssh using public key?
+
+o need progress feedback from fsck, especially for gdm.
+
+o regression tests:
+	options = '-', do not use fstab
+	options = '-', use fstab (mnt pt not defined either)
+
+o Should -N go in pam_mount.conf like it is now?  Shall I put this in
+conf/pam_mount.conf?  How does hashing/not hashing effect scripts?
+
+o Get rid of FIXMEs.
+
+= OpenBSD =====================================================================
+
+o Add losetup/fsck code.
+
+o Add support to vnconfig for reading passwords from stdin so that
+it can be used for EHD on OBSD.
+
+o Can't tell if EHD is already mounted on OpenBSD because mount says:
+/dev/svnd0c on /home/mike/enc..., not /home/mike.img on /home/mike/enc.
+
+o Make EHD on OpenBSD and Linux as similar as possible document EHD
+on OpenBSD.
+
+o Test new openpam to ensure OpenBSD patches are integrated.

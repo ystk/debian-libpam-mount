@@ -1,0 +1,33 @@
+
+State of ports.
+
+
+Solaris:
+- nothing done so far.
+- PAM component seemed to compile last time, otherwise untested.
+
+
+FreeBSD:
+- loop is working,
+- crypto: GELI and GBDE both have (IMO) wacky key setup scheme - the
+  frontend programs at least always want passphrases, but mount.crypt
+  is going to deliver the key for the cipher engine already.
+  Hence no crypto-geli.c/crypto-gbde.c as of this writing.
+- mount.crypt probably does not call mount(8) right yet.
+- pmt-ehd does not know newfs(8).
+- PAM component compiles, but is untested.
+
+
+NetBSD:
+- loop is working
+- cgd crypto device setup is working
+  but does not produce anything usable - only first 131072 bytes
+  are readable - what gives
+- newfs -I /dev/rcgd0d failed. Disklabel crap? I want to use bare devices.
+- mount.crypt probably does not call mount(8) right yet.
+- pmt-ehd does not know newfs(8).
+- PAM component compiles, but is untested.
+
+
+OpenBSD:
+- Does not have PAM.

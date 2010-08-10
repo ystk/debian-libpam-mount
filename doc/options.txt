@@ -1,0 +1,23 @@
+
+This short document will explain the various pam_mount options.
+Options are listed in the 4th column of a PAM file, e.g.:
+
+	auth	optional	pam_mount.so	debug
+
+
+enable_pam_password (default)
+disable_pam_password
+	Enable or disable asking the PAM system for a previously-entered
+	password.
+
+enable_interactive (default)
+disable_interactive
+	Enable or disable asking for a password interactively.
+
+pam_mount will first try to get the password from PAM, if enabled,
+otherwise interactively, if enabled.
+
+enable_propagate_password (default)
+disable_propagate_password
+	Enable/disable propagation of the interactively-input password
+	to PAM modules following in the stack.

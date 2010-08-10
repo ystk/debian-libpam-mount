@@ -1,0 +1,24 @@
+.TH pmt\-fd0ssh 1 "2008\-04\-06" "pam_mount" "pam_mount"
+.SH Name
+.PP
+pmt\-fd0ssh - pipe for password\-over\-stdin support to ssh
+.SH Syntax
+.PP
+\fBpmt\-fd0ssh\fP \fImount_command\fP
+.SH Description
+.PP
+This is a wrapper for ssh which reads the password from stdin
+and sets things up so that ssh will recall the wrapper to get the password,
+which will be read from the parent process using a pipe.
+.PP
+It is used by pam_mount(8) to mount SSH\-based filesystems, such as
+ccgfs and sshfs.
+.SH "See also"
+.PP
+This program is imported from hxtools, a tool suite by Jan Engelhardt.
+Idea by John S. Skogtvedt, http://www.debian\-administration.org/articles/587
+.SH Author
+.PP
+This manpage was originally written by Bastian Kleineidam
+<calvin@debian.org> for the Debian distribution of libpam\-mount but
+may be used by others.

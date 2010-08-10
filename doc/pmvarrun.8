@@ -1,0 +1,59 @@
+.TH pmvarrun 8 "2008\-10\-08" "pam_mount" "pam_mount"
+.SH Name
+.PP
+pmvarrun - updates /var/run/pam_mount/\fIuser\fP
+.SH Syntax
+.PP
+\fBpmvarrun\fP \fB\-u\fP \fIuser\fP [\fIoptions\fP]
+.SH Description
+.PP
+A separate program is needed so that /var/run/pam_mount/\fIuser\fP may be
+created with a pam_mount\-specific security context (otherwise
+SELinux policy will conflict with gdm, which also creates file
+in /var/run).
+.PP
+pmvarrun is flexible and can run in a number of different security setups:
+.SS
+root\-root
+.PP
+When pmvarrun is invoked as root, /var/run/pam_mount's permission settings can
+be as strict as needed; usually (0755,root,root) is a good pick as it gives
+users the debug control over their refcount. Refcount files are given their
+respective owners (chowned to the user who logs in).
+.SS user\-user
+.PP
+When invoked as the user who logs in, /var/run/pam_mount needs appropriate
+permissions to create a file, which means the write bit must be set. It is also
+highly suggested to set the sticky bit in this case, so other users do not
+tamper with your refcount.
+.SS root\-user
+.PP
+Some programs or login helpers incorrectly call the PAM stack in a way that the
+login phase is done as root and the logout phase as a normal user.
+Nevertheless, pmvarrun supports this, and the same permissions as in root\-root
+can be used. While the user may not be able to unlink his file from
+/var/run/pam_mount, it will be truncated to indicate the same state.
+.SH Options
+.TP
+\fB\-\-help\fP, \fB\-h\fP
+Display help.
+.TP
+\fB\-\-user\fP \fIuser\fP, \fB\-u\fP \fIuser\fP
+User to handle, must be a valid username.
+.TP
+\fB\-\-operation\fP \fInumber\fP, \fB\-o\fP \fInumber\fP
+Increase volume count by \fInumber\fP.
+.TP
+\fB\-d\fP
+Turn on debugging.
+.SH Files
+.PP
+\fB/var/run/pam_mount/\fP\fIuser\fP
+.SH Author
+.PP
+This manpage was originally written by Bastian Kleineidam
+<calvin@debian.org> for the Debian distribution of libpam\-mount but
+may be used by others.
+.PP
+See /usr/share/doc/packages/pam_mount/AUTHORS for the list of original authors
+of pam_mount.
