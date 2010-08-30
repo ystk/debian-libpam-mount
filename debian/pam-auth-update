@@ -1,0 +1,9 @@
+Name: Mount volumes for user
+Default: yes
+Priority: 128
+Auth-Type: Additional
+Auth:
+	optional	pam_mount.so
+Session-Type: Additional
+Session:
+	optional	pam_mount.so

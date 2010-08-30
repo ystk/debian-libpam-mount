@@ -1,0 +1,1613 @@
+libpam-mount (2.5-3) unstable; urgency=medium
+
+  * Depend on mount only on linux. Other architectures have the mount binary
+    in other packages. This makes the package installable on kfreebsd-*.
+    (Closes: #594640)
+  * Urgency medium due to RC bugfix.
+
+ -- Bastian Kleineidam <calvin@debian.org>  Mon, 30 Aug 2010 19:37:31 +0200
+
+libpam-mount (2.5-2) unstable; urgency=medium
+
+  * Improved arch detection in debian/rules.
+  * Fix configure flag to disable libcryptsetup on non-linux systems.
+    (Closes: #592492)
+  * Urgency medium due to RC bugfix.
+
+ -- Bastian Kleineidam <calvin@debian.org>  Wed, 25 Aug 2010 21:26:53 +0200
+
+libpam-mount (2.5-1) unstable; urgency=low
+
+  * New upstream release.
+  * Fixed debian/watch regex.
+  * debian/control: use Standards version 3.9.1
+  * Build libcryptsetup support only on Linux systems
+    (Closes: #592492)
+
+ -- Bastian Kleineidam <calvin@debian.org>  Tue, 10 Aug 2010 21:39:59 +0200
+
+libpam-mount (2.4-1) unstable; urgency=low
+
+  * New upstream release.
+  * debian/control: use Standards version 3.9.0
+
+ -- Bastian Kleineidam <calvin@debian.org>  Fri, 23 Jul 2010 23:00:05 +0200
+
+libpam-mount (2.3-1) unstable; urgency=low
+
+  * New upstream release.
+    + mount.crypt passes keyfile info to open LUKS volumes
+      (Closes: #528366)
+    + umount.crypt works again (Closes: #581713)
+
+ -- Bastian Kleineidam <calvin@debian.org>  Wed, 19 May 2010 04:05:25 +0200
+
+libpam-mount (2.1+git20100509-1) unstable; urgency=low
+
+  * New upstream release, plus git changes until 9.5.2010
+    + Works now with other password slots than zero on crypted mounts
+      (Closes: #580636)
+    + Certainly includes old patch fixing the cron segfaults
+      (Closes: #484122)
+  * Only warn about missing fskey hash when an fskey path has been given.
+    (Closes: #580430)
+
+ -- Bastian Kleineidam <calvin@debian.org>  Sun, 09 May 2010 10:46:01 +0200
+
+libpam-mount (2.0-1) unstable; urgency=low
+
+  * New upstream release.
+  * Build-Depend on libcryptsetup-dev, and remove cryptsetup from
+    the suggested packages.
+  * Remove patch var_run_cmtab, which was applied upstream.
+  * Add upstream git commit b4dbbfe to fix command line expansion.
+
+ -- Bastian Kleineidam <calvin@debian.org>  Wed, 28 Apr 2010 02:54:45 +0200
+
+libpam-mount (1.36-1) unstable; urgency=low
+
+  * New upstream release.
+  * Build-Depend on libhx >= 3.4
+  * Replace suggestion of truecrypt | truecrypt-util with tc-utils,
+    which actually exists.
+    Closes: #577588
+
+ -- Bastian Kleineidam <calvin@debian.org>  Tue, 13 Apr 2010 23:00:12 +0200
+
+libpam-mount (1.33-2) unstable; urgency=low
+
+  * Added patch grab_authtok_retcode:
+    Fix regression in authentication token handling.
+
+ -- Bastian Kleineidam <calvin@debian.org>  Fri, 05 Mar 2010 22:42:52 +0100
+
+libpam-mount (1.33-1) unstable; urgency=low
+
+  * New upstream release. (Closes: #551976)
+  * Use Standards version 3.8.4
+
+ -- Bastian Kleineidam <calvin@debian.org>  Fri, 05 Mar 2010 00:25:56 +0100
+
+libpam-mount (1.32-2) unstable; urgency=low
+
+  * Use /var/run/cmtab instead of /etc/cmtab to store dynamic mount
+    information. Complies with FHS standard. (Closes: #551327)
+  * Switch to 3.0 (quilt) source format.
+  * Switch to quilt patch management from dpatch
+  * Remove old checks for <<0.22 versions since 0.44 is in stable
+
+ -- Bastian Kleineidam <calvin@debian.org>  Tue, 17 Nov 2009 04:48:00 +0100
+
+libpam-mount (1.32-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Bastian Kleineidam <calvin@debian.org>  Wed, 23 Sep 2009 07:18:19 +0200
+
+libpam-mount (1.31-1) unstable; urgency=low
+
+  * New upstream release.
+    + patch 01_check_authtok_null: dropped, applied upstream
+  * Add deprecation comment to common-pammount (Closes: #546188)
+
+ -- Bastian Kleineidam <calvin@debian.org>  Sun, 13 Sep 2009 21:55:19 +0200
+
+libpam-mount (1.30-2) unstable; urgency=medium
+
+  * New patch 01_check_authtok_null:
+    Fixes segfault when running /bin/su and logging in from console as
+    root.
+    Urgency medium since this could lock out users from the system.
+    (Closes: #545846)
+
+ -- Bastian Kleineidam <calvin@debian.org>  Wed, 09 Sep 2009 20:28:26 +0200
+
+libpam-mount (1.30-1) unstable; urgency=low
+
+  * New upstream release.
+    + patch 14_no_double_mtab_removal: dropped, applied upstream
+    + patch 13_avoid_sudo_crash: dropped, applied upstream
+    + patch 07_correct_default_hash: dropped; there is no default hash
+      or digest for openssl documented, so don't claim there is one.
+  * The new version depends on an updated libHX library, so the FTBFS
+    occuring with an older libHX library is fixed.
+    (Closes: #545589)
+  * Documented the pam-auth-update(8) usage as replacement of the
+    old common-pammount file in debian/NEWS, the postinstall script,
+    and debian/README.Debian.
+    (Closes: #542787)
+
+ -- Bastian Kleineidam <calvin@debian.org>  Sat, 29 Aug 2009 08:03:43 +0200
+
+libpam-mount (1.27-4) unstable; urgency=low
+
+  * Remove old use_first_pass option from debian/pam-auth-update
+    to avoid warnings.
+  * Added pmt-ofl(1) manpage.
+
+ -- Bastian Kleineidam <calvin@debian.org>  Wed, 19 Aug 2009 21:05:32 +0200
+
+libpam-mount (1.27-3) unstable; urgency=low
+
+  * Install DTD for the XML configuration file so that it can be
+    validated with xmllint.
+  * Updated README.Debian:
+    - added note about configuration validation
+    - remove old notes about common-pammount
+  * Added sshfs to the suggested packages.
+  * Use Standards version 3.8.3 (no further changes required)
+  * Updated 15_kfreebsd_defines patch: don't compile src/mount-sysv.c
+    on kfreebsd systems.
+  * Use pam-auth-update instead of a custom common-pammount file. Thanks
+    to Steve Langasek for the patch. (Closes: #519956)
+
+ -- Bastian Kleineidam <calvin@debian.org>  Tue, 18 Aug 2009 22:29:29 +0200
+
+libpam-mount (1.27-2) unstable; urgency=low
+
+  * Build-depend on autotools-dev to be sure current config.guess and
+    config.sub are used when compiling.
+  * Add patch 15_kfreebsd_defines:
+    Should fix compile error on GNU/k*BSD systems
+
+ -- Bastian Kleineidam <calvin@debian.org>  Wed, 12 Aug 2009 20:36:01 +0200
+
+libpam-mount (1.27-1) unstable; urgency=low
+
+  * New upstream release.
+    - new patch 12_mnt_fallback:
+      For upgrading, fall back to mtab parsing on unmount.
+    - new patch 13_avoid_sudo_crash:
+      Avoid sudo crashing; picked from upstream git.
+    - new patch 14_no_double_mtab_removal:
+      Avoid double mtab removal; picked from upstream git.
+    - fixed interactive password input (Closes: #509234)
+    - fixed SGRP matching (Closes: #512030)
+    - does not ignore XML syntax errors (Closes: #532877)
+    - added NFS4 recognition (Closes: #532875)
+
+ -- Bastian Kleineidam <calvin@debian.org>  Sun, 09 Aug 2009 10:47:41 +0200
+
+libpam-mount (1.10-1) unstable; urgency=low
+
+  * New upstream release.
+  * Remove outdated FAQ entry (Closes: #514855)
+
+ -- Bastian Kleineidam <calvin@debian.org>  Wed, 11 Feb 2009 15:39:00 +0100
+
+libpam-mount (1.9-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Bastian Kleineidam <calvin@debian.org>  Fri, 16 Jan 2009 19:25:05 +0100
+
+libpam-mount (1.8-1) unstable; urgency=low
+
+  * New upstream release.
+    - Fixes segfault when used in cron environments (Closes: #510990)
+  * Removed use_first_pass from common-pammount (Closes: #509233)
+
+ -- Bastian Kleineidam <calvin@debian.org>  Wed, 07 Jan 2009 10:12:37 +0100
+
+libpam-mount (1.7-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Bastian Kleineidam <calvin@debian.org>  Fri, 02 Jan 2009 17:58:18 +0100
+
+libpam-mount (1.6-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Bastian Kleineidam <calvin@debian.org>  Sun, 28 Dec 2008 10:17:39 +0100
+
+libpam-mount (1.5-2) unstable; urgency=low
+
+  * Remove use_first_pass from common-pammount (Closes: #509233)
+
+ -- Bastian Kleineidam <calvin@debian.org>  Mon, 22 Dec 2008 14:08:21 +0100
+
+libpam-mount (1.5-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Bastian Kleineidam <calvin@debian.org>  Sun, 14 Dec 2008 08:52:03 +0100
+
+libpam-mount (1.4-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Bastian Kleineidam <calvin@debian.org>  Tue, 25 Nov 2008 00:31:21 +0100
+
+libpam-mount (1.2+gitaa4791f-2) unstable; urgency=low
+
+  * Replace try_first_pass in common-pammount with use_first_pass.
+  * Remove old PAM keyword try_first_pass from manpage documentation
+    (Closes: #505933)
+  * Adjusted README.Debian to use '~' instead of '/home/user' in examples.
+  * Add manpage aliases (u)mount.crypt_LUKS.8 to the (u)mount.crypt.8
+    pages.
+
+ -- Bastian Kleineidam <calvin@debian.org>  Tue, 18 Nov 2008 10:49:13 +0100
+
+libpam-mount (1.2+gitaa4791f-1) unstable; urgency=low
+
+  * New upstream release (with some patches still in the git repo).
+    + Fixes cryptoloop bug (Closes: #502357, #502355)
+    + Fixes unmounting folders ending in a slash (Closes: #495177)
+    + Replaces old mount_ehd script (Closes: #494108)
+    + Fixes mount.crypt option error (Closes: #502956)
+  * Updated package description.
+  * Suggest xfsprogs for XFS volume mounting.
+  * Added patch from Michael Bramer to allow usernames to start with
+    digits. Thanks! (Closes: #505258)
+  * Do not support upgrading from old versions << 0.20 anymore.
+    This means debconf templates are not needed anymore, including the
+    new swedish one from Martin Bagge. Thanks anyway! (Closes: #503873)
+  * New patch 11_correct_device_for_luks_test:
+     + fix mounting of LUKS devices with mount.crypt
+  * New patch 12_init_crypto_device_name:
+     + Initialize crypto device name with NULL
+
+ -- Bastian Kleineidam <calvin@debian.org>  Wed, 12 Nov 2008 17:48:27 +0100
+
+libpam-mount (0.48-1) unstable; urgency=high
+
+  * New upstream release, using libhx >= 0.25.
+    - Prevents security flaw CVE-2008-3970 (thus urgency high) (Closes: #499841)
+    - Prevents double free in "su" usage (Closes: #493234)
+    - Does "~" expanding in paths again (Closes: #497813)
+    - Print names of blocking processes on umount (Closes: #494107)
+
+ -- Bastian Kleineidam <calvin@debian.org>  Sun, 28 Sep 2008 19:50:41 +0200
+
+libpam-mount (0.44-1) unstable; urgency=low
+
+  * New upstream release.
+    (Closes: #492559, #493497, #493234, #494107)
+
+ -- Bastian Kleineidam <calvin@debian.org>  Mon, 25 Aug 2008 22:47:56 +0200
+
+libpam-mount (0.43-1) unstable; urgency=low
+
+  * New upstream release (Closes: #491222).
+
+ -- Bastian Kleineidam <calvin@debian.org>  Sat, 19 Jul 2008 21:11:42 +0200
+
+libpam-mount (0.41-1) unstable; urgency=low
+
+  * New upstream release.
+    + Fixes wrong mount.crypt options in pam_mount.conf.xml. (Closes: #486599)
+
+ -- Bastian Kleineidam <calvin@debian.org>  Tue, 17 Jun 2008 09:59:01 +0200
+
+libpam-mount (0.40-1) unstable; urgency=medium
+
+  * New upstream release.
+    + Fixes segfault when more than one volume was defined, thus
+      urgency medium. (Closes: #485620)
+  * New patch 07_use_fsck_conf:
+    Make configured fsck options available to mount.crypt via
+    the FSCK environment variable.
+    (Closes: #481366)
+  * New patch 08_check_return_codes:
+    Check error conditions of some init functions.
+  * New patch 09_fix_umount_crypt
+    Fix conditional expression syntax of umount.crypt.
+  * Use Standards version 3.8.0
+  * (Build-)Depend on libhx >= 0.18
+  * Install pam_mount(8) and pam_mount.conf(5) manpages.
+
+ -- Bastian Kleineidam <calvin@debian.org>  Tue, 10 Jun 2008 21:33:46 +0200
+
+libpam-mount (0.39-1) unstable; urgency=low
+
+  * New upstream release.
+  * Use debhelper v7
+  * Updated build dependencies to use libhx-dev >= 1.17
+
+ -- Bastian Kleineidam <calvin@debian.org>  Wed, 28 May 2008 20:37:06 +0200
+
+libpam-mount (0.38-1) unstable; urgency=low
+
+  * New upstream release.
+  * Updated README.Debian file.
+    + mention ordering of PAM modules using a mounted home directory
+      (Closes: #481527)
+
+ -- Bastian Kleineidam <calvin@debian.org>  Sun, 18 May 2008 21:01:10 +0200
+
+libpam-mount (0.35.1-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Bastian Kleineidam <calvin@debian.org>  Fri, 11 Apr 2008 17:24:16 +0200
+
+libpam-mount (0.35-2) unstable; urgency=low
+
+  * Pull upstream patch to fix autodetection of ssl support.
+    (Closes: #475256)
+
+ -- Bastian Kleineidam <calvin@debian.org>  Thu, 10 Apr 2008 11:10:16 +0200
+
+libpam-mount (0.35-1) unstable; urgency=low
+
+  * New upstream release.
+  * Build-Depend on libhx >= 1.15, needed for the new %(ifnempty...)
+    configuration magic.
+  * Remove unneeded zlib development library from build dependencies.
+  * Added pmt-fd0ssh(1) manpage.
+
+ -- Bastian Kleineidam <calvin@debian.org>  Sun, 06 Apr 2008 18:13:59 +0200
+
+libpam-mount (0.33-3) unstable; urgency=low
+
+  * Properly escape minus signs in pam_mount(8) manpage. Fixes lintian
+    warnings.
+  * Override lintian warning patch-system-but-direct-changes-in-diff
+    since pam_mount.txt is generated from pam_mount.8 which we modified.
+  * Use debhelper v6 and dh_lintian.
+  * New patch 11_check_ftruncate_err: check ftruncate() return value.
+  * Avoid linking pmvarrun against unused libraries -lssl -lcrypto.
+
+ -- Bastian Kleineidam <calvin@debian.org>  Fri, 14 Mar 2008 09:39:57 +0100
+
+libpam-mount (0.33-2) unstable; urgency=low
+
+  * Fix loop mount logic error. Thanks Holger Brunn for the patch.
+    (Closes: #470081)
+
+ -- Bastian Kleineidam <calvin@debian.org>  Mon, 10 Mar 2008 00:37:31 +0100
+
+libpam-mount (0.33-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Bastian Kleineidam <calvin@debian.org>  Sat, 23 Feb 2008 08:48:31 +0100
+
+libpam-mount (0.32-5) unstable; urgency=low
+
+  * Use security flags for gcc invocations.
+  * Upstream vcs is now git, so use Vcs-Git and adjust Vcs-Browser
+    variables in debian/control.
+  * Clarify that src/* files are LGPL licensed, all other files are GPL.
+
+ -- Bastian Kleineidam <calvin@debian.org>  Fri, 15 Feb 2008 18:43:20 +0100
+
+libpam-mount (0.32-4) unstable; urgency=low
+
+  * Update package description and Debconf templates as reviewed by the
+    debian-l10n-english team as part of the Smith review project.
+    (Closes: #459227)
+  * Debconf translation updates:
+    + Portuguese (Closes: #459967)
+    + German (Closes: #462491)
+    + Galician (Closes: #459988)
+    + Vietnamese (Closes: #460032)
+    + Basque (Closes: #460046, #462023)
+    + Finnish (Closes: #460285)
+    + Czech (Closes: #460950)
+    + Italian (Closes: #461562)
+    + Russian (Closes: #462133)
+    + Dutch (Closes: #462436)
+    + French (Closes: #462771)
+  * Thanks to all the translators and the debian l10n team!
+
+ -- Bastian Kleineidam <calvin@debian.org>  Mon, 14 Jan 2008 14:37:36 +0100
+
+libpam-mount (0.32-3) unstable; urgency=high
+
+  * Build-depend on pkg-config. This should really fix the
+    FTBFS errors (Closes: #454967, #454971), thus urgency high.
+  * Make sure to remove old config files on purge. (Closes: #455032)
+
+ -- Bastian Kleineidam <calvin@debian.org>  Mon, 10 Dec 2007 07:53:06 +0100
+
+libpam-mount (0.32-2) unstable; urgency=high
+
+  * Fixed typo in versioned build dependencies for libhx-dev. This fixes
+    FTBFS (Closes: #454967, #454971), thus urgency high.
+
+ -- Bastian Kleineidam <calvin@debian.org>  Sat, 08 Dec 2007 18:44:50 +0100
+
+libpam-mount (0.32-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Bastian Kleineidam <calvin@debian.org>  Fri, 07 Dec 2007 01:54:11 +0100
+
+libpam-mount (0.31-3) unstable; urgency=low
+
+  * Forgot to apply updated patch 02_check_null_options
+  * Update Standards Version to 3.7.3, no changes required
+
+ -- Bastian Kleineidam <calvin@debian.org>  Tue, 04 Dec 2007 04:41:00 +0100
+
+libpam-mount (0.31-2) unstable; urgency=low
+
+  * Add portugese debconf translations, thanks Américo Monteiro.
+    (Closes: #453917)
+  * Updated patches:
+    + 02_check_null_options, add upstream SVN patch to prevent segfault
+      caused by a NULL options value, and check the return value of
+      HXbtree_init().
+
+ -- Bastian Kleineidam <calvin@debian.org>  Mon, 03 Dec 2007 12:59:23 +0100
+
+libpam-mount (0.31-1) unstable; urgency=low
+
+  * New upstream release.
+  * Patches applied upstream:
+    + 01_pam_mount_conf_fix
+    + 04_convert_local_fstype_fix
+    + 08_convert_attrs_after_splice_fix
+  * Updated patches:
+    + 02_check_null_options, fixed another segfault when logging out
+
+ -- Bastian Kleineidam <calvin@debian.org>  Sun, 02 Dec 2007 12:20:23 +0100
+
+libpam-mount (0.29-5) unstable; urgency=low
+
+  * Let the user decide wether to automatically convert the
+    configuration to the new XML format or not. Also display a note
+    to check the converted configuration, in case something goes wrong.
+    (Downgrades: #452901)
+
+ -- Bastian Kleineidam <calvin@debian.org>  Mon, 26 Nov 2007 08:20:10 +0000
+
+libpam-mount (0.29-4) unstable; urgency=low
+
+  * New patch 04_convert_local_fstype_fix: convert 'local' fstype
+    entries from old configuration format correctly.
+  * New patch 07_already_mounted_no_fspt_test: The check if a
+    volume is already mounted must ignore the target mount point.
+    Else the case where a device is already mounted elsewhere is
+    never detected.
+    (Closes: #451156)
+  * Add Vcs-Svn and Vcs-Browser fields to debian/control
+  * New patch 08_convert_attrs_after_splice_fix: 
+    The sgrp, pgrp and user attributes must be filled after checking
+    wrong splits, not before. Else user entries with spaces won't be
+    converted correctly.
+    (Closes: #452504)
+
+ -- Bastian Kleineidam <calvin@debian.org>  Fri, 23 Nov 2007 14:35:59 +0100
+
+libpam-mount (0.29-3) unstable; urgency=low
+
+  * New patch 02_check_null_options: check if options are NULL
+    before using them. (Closes: #448417)
+
+ -- Bastian Kleineidam <calvin@debian.org>  Mon, 29 Oct 2007 09:01:39 +0100
+
+libpam-mount (0.29-2) unstable; urgency=low
+
+  * Fix Suggestion typo psmis -> psmisc.
+  * Fixed copy-and-paste error in pam_mount.conf converter script, patch
+    from SVN r380. (Closes: #446382)
+
+ -- Bastian Kleineidam <calvin@debian.org>  Fri, 12 Oct 2007 23:38:33 +0200
+
+libpam-mount (0.29-1) unstable; urgency=low
+
+  * New upstream release.
+  * Dropped patches:
+    + 04_spawn_pipes, applied upstream
+  * First release with only Debian specific patches. Yay!
+  * Added bugs.txt to documentation, which also lists PAM applications that
+    drop root privileges, and thus fail to unmount properly on logout.
+    Closes: #444419
+
+ -- Bastian Kleineidam <calvin@debian.org>  Mon, 01 Oct 2007 15:55:23 +0200
+
+libpam-mount (0.28-1) unstable; urgency=low
+
+  * New upstream release.
+  * Dropped patches:
+    + 07_mount_option_space
+      uneeded, mount and nfsmount support -o without a space
+    + 09_password_prompt
+      unneeded, the password prompt is configurable through the config
+    + 14_convert_luserconf
+      applied upstream
+    + 15_pmvarrun_abspath
+      unneeded, the bug is fixed via setting PATH manually
+    + 16_close_session_no_volumes
+      applied upstream
+  * Add patch 04_spawn_pipes from upstream SVN:
+    Fix file descriptor initialization and out-of-bounds array access.
+  * Remove uneeded glib from Build-Depends.
+  * Cleanup and updates for README.Debian:
+    + put package requirements into separate paragraph
+    + updated the examples for the new XML configuration format
+  * Add psmisc and fuser packages to the Suggests since the umount.crypt
+    uses them.
+
+ -- Bastian Kleineidam <calvin@debian.org>  Tue, 25 Sep 2007 14:24:49 +0200
+
+libpam-mount (0.26-1) unstable; urgency=low
+
+  * New upstream release.
+    + Adds a "nullok" option for passwordless users.
+      (Closes: #438186)
+  * Dropped patches applied upstream:
+    08_mount_crypt_luksopen_args, 10_mount_crypt_syntax,
+    11_convert_empty_fields, 12_convert_error_msg,
+    13_convert_leading_whitespace
+  * Mention that user-specified configuration files ($HOME/.pam_mount.conf)
+    have to be manually converted in NEWS.Debian.
+    (Closes: #443317)
+  * Converter should write luserconf file with ".xml" appended.
+    (Closes: #443316)
+  * Ensure pmvarrun is an absolute path in the default configuration.
+  * Move Homepage from description into control field.
+  * Don't run pmvarrun or lookup user credentials when no volumes are
+    configured. Fixes segfault when pam_mount is configured with su.
+    (Closes: #443704)
+
+ -- Bastian Kleineidam <calvin@debian.org>  Mon, 24 Sep 2007 01:53:45 +0200
+
+libpam-mount (0.21-3) unstable; urgency=medium
+
+  * Fix order of argument in luksOpen call in mount.crypt. Without
+    this, the cryptsetup call could segfault as outlined in
+    http://bugs.debian.org/438198
+    Set urgency medium for this. Closes: #443192
+
+ -- Bastian Kleineidam <calvin@debian.org>  Wed, 19 Sep 2007 13:55:42 +0200
+
+libpam-mount (0.21-2) unstable; urgency=low
+
+  * Fixes for convert_pam_mount_conf.pl:
+    + Don't write empty fields as '-' when converting old config files
+      with the convert script. (Closes: #442014)
+    + Strip leading whitespace. (Closes: #442019)
+  * When upgrading from versions << 0.20 run convert_pam_mount_conf.pl
+    automatically. (Closes: #442017)
+
+ -- Bastian Kleineidam <calvin@debian.org>  Tue, 18 Sep 2007 19:31:13 +0200
+
+libpam-mount (0.21-1) unstable; urgency=high
+
+  * New upstream version.
+  * Dropped patches applied upstream:
+    04_largefile64_macro, 10_mount_crypt_loop_check, 21_delay_system_auth
+  * Updated patches:
+    03_debian_docs, 06_debian_manpages, 07_mount_option_space
+  * Removed patches:
+    14_faq_debian (the CLOSE_SESSION param has been removed in current
+    releases)
+  * Install upstream changelog.
+  * Add libxml2-dev to the build depends; RC bug, thus urgency high.
+    Closes: #442986, #441922
+  * Rename debian/NEWS.Debian to debian/NEWS, so it really gets
+    installed as /usr/share/doc/libpam-mount/NEWS.Debian :-o
+    (References: #442017)
+
+ -- Bastian Kleineidam <calvin@debian.org>  Tue, 18 Sep 2007 14:50:13 +0200
+
+libpam-mount (0.20-1) unstable; urgency=low
+
+  * New upstream version.
+    + Waits for up to 5 seconds when umounting a busy mount point.
+      That and using lazy unmounting ("umount -l") should be enough
+      workarounds for buggy applications that leave processes using
+      the device after a session close. (Closes: #370526)
+    + Uses new configuration file syntax; see NEWS.Debian for more info.
+  * Dropped patches applied upstream:
+    02_hide_debug, 05_mount_crypt_break, 08_mount_crypt_readonly_luksopen,
+    11_no_debug, 17_readlink_path, 18_clear_krb5_env
+  * Updated patches:
+    03_debian_docs, 04_largefile64_macro, 06_debian_manpages,
+    07_mount_option_space, 09_password_prompt, 10_mount_crypt_loop_check
+    14_faq_debian, 21_delay_system_auth
+  * Add fuse-utils to suggested packages.
+  * Add truecrypt-utils to suggested packages. The truecrypt license is
+    non-free but the user could have a private package for it.
+  * Add davfs2 to suggested packages.
+  * Mention new filesystem types in README.Debian.
+  * Remove the "send patches" line of the description. It is sufficient
+    to have it in the README and manpage.
+
+ -- Bastian Kleineidam <calvin@debian.org>  Wed, 05 Sep 2007 20:02:46 +0200
+
+libpam-mount (0.18-7) unstable; urgency=low
+
+  * Adjust debian/watch file to use tar.bz2 instead of the older .tbz2
+    extension.
+  * Use "Password:" as default password prompt, just like login(1) and
+    other text-based login programs. (Closes: #439611)
+  * Don't build a loop device on top of a loop device. This happens
+    when the "loop" option is used. (Closes: #439703)
+
+ -- Bastian Kleineidam <calvin@debian.org>  Thu, 09 Aug 2007 12:19:45 +0200
+
+libpam-mount (0.18-6) unstable; urgency=medium
+
+  * Define _LARGEFILE64_SOURCE to enable 64 bit gzopen() on 32 bit
+    systems. Fixes a compiler warning and possible segfaults on some
+    architectures; thus urgency medium. (Closes: #435424)
+
+ -- Bastian Kleineidam <calvin@debian.org>  Tue, 31 Jul 2007 19:29:26 +0200
+
+libpam-mount (0.18-5) unstable; urgency=low
+
+  * Clear Kerberos environment setting after login.
+  * Improved detection when to avoid an xdm crash
+  * Add space before mount -o options (Closes: #434707)
+  * Use luksOpen --readonly option for read-only LUKS mounts in
+    mount.crypt.
+  * Verified that openssh-server now works somewhat - mounts ok, but
+    does not unmount. But at least it is usable. Thanks Margarita
+    Manterola for testing.  (Closes: #254679)
+
+ -- Bastian Kleineidam <calvin@debian.org>  Tue, 12 Dec 2006 09:39:23 +0100
+
+libpam-mount (0.18-4) unstable; urgency=low
+
+  * Added patch 21_delay_system_auth, fixing su and cron when
+    configured with pam_mount.
+
+ -- Bastian Kleineidam <calvin@debian.org>  Sun,  3 Dec 2006 21:54:59 +0100
+
+libpam-mount (0.18-3) unstable; urgency=medium
+
+  * Remove the default debug option from pmvarrun (Closes: #390946)
+  * Urgency medium, since the debug option enabled local attackers
+    to verify valid usernames.
+
+ -- Bastian Kleineidam <calvin@debian.org>  Wed,  4 Oct 2006 12:11:27 +0200
+
+libpam-mount (0.18-2) unstable; urgency=low
+
+  * Document in NEWS.Debian that smb must be renamed to smbfs in
+    releases >= 0.10. Thanks to Hubert Krause for the note.
+    (Closes: #385555)
+
+ -- Bastian Kleineidam <calvin@debian.org>  Thu, 14 Sep 2006 19:55:10 +0200
+
+libpam-mount (0.18-1) unstable; urgency=low
+
+  * New upstream release.
+    + Dropped 12_check_xmemdup, applied upstream
+    + Dropped 15_va_args_reuse, applied upstream
+    + Dropped 16_fusemount_chdir, applied upstream
+
+ -- Bastian Kleineidam <calvin@debian.org>  Thu,  7 Sep 2006 20:07:50 +0200
+
+libpam-mount (0.17-3) unstable; urgency=medium
+
+  * Patch 17_readlink_path: fix the path to readlink in umount.crypt
+  * Urgency medium, since the 15_va_args_reuse patch fixes a segfault
+    on AMD64 systems, which makes the package mostly unusable there.
+
+ -- Bastian Kleineidam <calvin@debian.org>  Wed,  9 Aug 2006 19:23:28 +0200
+
+libpam-mount (0.17-2) unstable; urgency=low
+
+  * Dropped 13_cifsmount_user patch: not necessary
+  * Patch 14_faq_debian: update FAQ entry about Debian login package and
+    CLOSE_SESSIONS
+  * Patch 15_va_args_reuse pulled from SVN: avoid reusing va_list
+    variables, fixes segfault on AMD64
+  * Patch 16_fusemount_chdir pulled from SVN: chdir to / for fusermount
+    to work
+
+ -- Bastian Kleineidam <calvin@debian.org>  Tue,  8 Aug 2006 22:52:33 +0200
+
+libpam-mount (0.17-1) unstable; urgency=low
+
+  * New upstream release.
+  * Updated README.Debian wrt to bugs in ssh servers
+  * 04_sbin_umount dropped, applied upstream
+  * Added patch 12_check_xmemdup: check return value of the xmemdup
+    function
+  * Added patch 11_no_debug: disable debug per default, since gksu is
+    not working with debug enabled
+  * Added patch 13_cifsmount_user: fix cifs user mount option
+
+ -- Bastian Kleineidam <calvin@debian.org>  Mon,  7 Aug 2006 19:57:44 +0200
+
+libpam-mount (0.15-1) unstable; urgency=low
+
+  * New upstream release (there was no 0.14 release).
+  * Disable debugging per default, since the gksu program does not work
+    with pam_mount debugging enabled
+  * Disable patch 07_local_vol_user for now, this has to be tested more.
+  * Disable the renaming of the debug variable (aka the XDM crasher),
+    since upstream has fixed/worked around that.
+
+ -- Bastian Kleineidam <calvin@debian.org>  Fri, 28 Jul 2006 21:08:41 +0200
+
+libpam-mount (0.13-4) unstable; urgency=low
+
+  * Add LUKS example to README.Debian
+  * New patch 09_spawn_set_sigchld
+    Always set SIGCHLD signal handler to prevent gdm from destroying
+    the pam_mount thread.
+  * New patch 10_waitpid_check
+    Added missing waitpid error checks, improved error message.
+
+ -- Bastian Kleineidam <calvin@debian.org>  Thu,  1 Jun 2006 23:47:41 +0200
+
+libpam-mount (0.13-3) unstable; urgency=low
+
+  * New patch 08_ehd_grep:
+    Support wildcard entries in passwdehd and autoehd scripts.
+    Improved error message when copying failed in passwdehd
+  * Added command descriptions to passwdehd.1 and autoehd.1 manpages.
+  * Standards version 3.7.2.0 (no changes required)
+
+ -- Bastian Kleineidam <calvin@debian.org>  Tue, 30 May 2006 21:05:38 +0200
+
+libpam-mount (0.13-2) unstable; urgency=low
+
+  * New patch 04_sbin_umount:
+    Since umount.crypt moved to /sbin, also adjust the hard coded path
+    when unmounting crypt devices.
+
+ -- Bastian Kleineidam <calvin@debian.org>  Fri, 21 Apr 2006 00:37:10 +0200
+
+libpam-mount (0.13-1) unstable; urgency=low
+
+  * New upstream release.
+  * Dropped 22_loop_dev_sed.dpatch, applied upstream with modifications
+  * Move (u)mount.crypt to /sbin which removes the symlink kludge
+  * Drop 06_debian_install_prefix patch in favor of --libdir configure
+    option
+
+ -- Bastian Kleineidam <calvin@debian.org>  Wed, 12 Apr 2006 23:37:05 +0200
+
+libpam-mount (0.12.2-3) unstable; urgency=low
+
+  * Fix device name for loopback crypt mounts. Patch by Johannes
+    Lehtinen. (Closes: #358916)
+
+ -- Bastian Kleineidam <calvin@debian.org>  Sun, 26 Mar 2006 23:36:25 +0200
+
+libpam-mount (0.12.2-2) unstable; urgency=low
+
+  * Allow local .pam_mount.conf entries to have another username than
+    the user logging in. Useful for example when the samba username is
+    not equal to the unix username
+
+ -- Bastian Kleineidam <calvin@debian.org>  Thu,  2 Feb 2006 19:44:58 +0100
+
+libpam-mount (0.12.2-1) unstable; urgency=low
+
+  * New upstream release.
+  * README.Debian: remove paragraph about the deprececated CLOSE_SESSIONS
+    option.
+
+ -- Bastian Kleineidam <calvin@debian.org>  Tue, 31 Jan 2006 17:47:44 +0100
+
+libpam-mount (0.12.0-1) unstable; urgency=low
+
+  * New upstream release.
+    Dropped patches applies upstream:
+      22_fstype_nodev
+      23_log_argv_close_cstdin
+      24_local_config
+      25_volume_record_asserts
+
+ -- Bastian Kleineidam <calvin@debian.org>  Wed, 11 Jan 2006 22:29:46 +0100
+
+libpam-mount (0.11.0-1) unstable; urgency=low
+
+  * New upstream version.
+    Dropped patches applied upstream:
+      05_warnings 15_config_pam_mount_item 18_umount_crypt_errors
+      19_match_null 20_session_error
+  * Remove suggestion of the realpath package since readlink -f is now
+    used instead, which is in coreutils.
+  * Remove build-depends on 'check', since it is not used.
+
+ -- Bastian Kleineidam <calvin@debian.org>  Fri, 30 Dec 2005 22:15:39 +0100
+
+libpam-mount (0.10.0-3) unstable; urgency=low
+
+  * updated debian/watch file to use new download URL
+  * updated patch 18_umount_crypt_errors to accept a trailing slash
+    in the umount path argument in case no /usr/bin/realpath is
+    installed.
+
+ -- Bastian Kleineidam <calvin@debian.org>  Thu,  8 Dec 2005 20:14:41 +0100
+
+libpam-mount (0.10.0-2) unstable; urgency=low
+
+  * Replace old 'local' fstype config examples with 'ext3', in
+    README.Debian and pam_mount.conf.
+    Add an appropriate note to NEWS.Debian.
+  * Fixed fstype_nodev() so that the check_filesystem() fsck routine is
+    actually run.
+
+ -- Bastian Kleineidam <calvin@debian.org>  Mon,  5 Dec 2005 00:26:15 +0100
+
+libpam-mount (0.10.0-1) unstable; urgency=low
+
+  * New upstream release. The original bzipped tarball has been
+    repackaged to an orig.tar.gz, no changes were made.
+  * updated debian/copyright due to new upstream maintainer
+  * updated README.Debian for new upstream changes
+  * Use debhelper v5
+
+ -- Bastian Kleineidam <calvin@debian.org>  Fri, 18 Nov 2005 22:31:56 +0100
+
+libpam-mount (0.9.27.62-2) unstable; urgency=low
+
+  * Update 17_mount_crypt_stdin again by not using the -d option of
+    cryptsetup which disables the hashing.
+    (Closes: #334694, #335208)
+
+ -- Bastian Kleineidam <calvin@debian.org>  Mon, 24 Oct 2005 23:17:47 +0200
+
+libpam-mount (0.9.27.62-1) unstable; urgency=low
+
+  * New upstream version, again via private mail from the new maintainer
+    Jan Engelhardt. And the patch list changelog:
+    - 01_init_sigmask
+      dropped, applied upstream
+    - 02_command_args
+      dropped, applied upstream
+    - 04_g_ascii_strup
+      dropped, applied upstream
+    - 07_mount_crypt_luks
+      dropped, applied upstream
+    - 08_user_groups
+      dropped, applied upstream
+    - 09_umount_crypt_realpath
+      dropped, applied upstream
+    - 10_mount_links
+      dropped, applied upstream
+    - 11_config_examples
+      dropped, applied upstream
+    - 12_pmvarrun_debug
+      dropped, applied upstream
+    - 13_symbol_clash_fix
+      replaced with 21_pmdebug
+    - 14_mount_crypt_quoting
+      dropped, applied upstream (a little modified)
+    - 16_vol_to_dev_cpy
+      dropped, applied upstream
+    - 17_mount_crypt_stdin
+      updated, use test -t 0 for interactivity test
+      (Closes: #334694)
+    - 18_umount_crypt_errors
+      new: Add REALPATH var, and check if it exists.
+    - 19_string_index
+      new: Fix off-by-one index errors, and make sure that the volume
+      device is delimited with \0.
+    - 20_session_error
+      new: When mounts fail the session should indicate error. Otherwise
+      a $HOME volume mount with a "required" entry in the PAM config
+      is not working, ie. the user logs in even if the partition
+      could not be mounted.
+    - 21_pmdebug
+      new: Rename Debug -> PMDebug to avoid crash when using with xdm.
+
+ -- Bastian Kleineidam <calvin@debian.org>  Wed, 19 Oct 2005 18:34:03 +0200
+
+libpam-mount (0.9.27.49-2) unstable; urgency=low
+
+  * Add exec and fsck to the mount options in the README.Debian
+    examples.
+  * Avoid conflicting symbols with other libraries and/or programs by
+    using a unique prefix for global variables and methods. Thanks Paul
+    Hampson for the note.
+    (Closes: #324735)
+  * Fix quoting of mount.crypt options, thanks Mattia Monga for the
+    patch. (Closes: #332869, #334115)
+  * Fix double free of config items if pam_close_session is called
+    twice. Thanks Paul Hampson for the patch. (Closes: #302024)
+  * Fix some string copy lengths in vol_to_dev(), could garble the
+    device name display.
+  * Make sure that crypsetup password is read from stdin in mount.crypt.
+
+ -- Bastian Kleineidam <calvin@debian.org>  Mon, 17 Oct 2005 23:21:29 +0200
+
+libpam-mount (0.9.27.49-1) unstable; urgency=low
+
+  * New upstream release from Jan Engelhardt (via private mail) with lots
+    of our patches and more included. Here is the complete list:
+    - 02_setuid_helper
+      dropped, applied to upstream
+    - 03_mkehd_bash_script
+      dropped, applied to upstream
+    - 04_debian_install_prefix
+      renamed to 06_debian_install_prefix
+    - 05_disable_mntcheck
+      dropped, unnecessary
+    - 06_user_mount_tools
+      dropped, applied upstream
+    - 07_setuid_user
+      dropped, applied upstream
+    - 10_chown_user_mount_count
+      dropped, applied upstream
+    - 11_crypt_types
+      dropped, applied upstream
+    - 12_dont_free_dirname
+      dropped, the new g_dirname() function uses malloc()ed memory
+      and it definitely must be freed.
+    - 13_empty_options
+      dropped, applied upstream
+    - 15_no_error_warnings
+      dropped, applied upstream
+    - 16_compiler_warnings
+      dropped, applied upstream
+    - 18_more_err_msgs
+      dropped, applied upstream
+    - 20_loop_in_mtab_symlink
+      dropped, applied upstream
+    - 22_example_docs
+      applied upstream in parts, rest is in 03_debian_docs
+    - 26_unmount_wrong_directory
+      dropped, applied upstream
+    - 27_fix_dmdevice_name
+      dropped, applied upstream
+    - 28_converse_resp_check
+      dropped, applied upstream
+    - 29_crypto_compile_fix
+      dropped, applied upstream
+    - 31_no_ws_arg_split
+      dropped, applied upstream
+    - 32_mount_crypt_options
+      dropped, applied upstream
+    - 33_pmvarrun_errors
+      dropped, applied upstream
+    - 34_losetup_password
+      dropped, applied upstream
+    - 35_mount_crypt_luks
+      renamed to 07_mount_crypt_luks
+    - 36_user_groups
+      renamed to 08_user_groups
+    - 37_umount_crypt_realpath
+      renamed to 09_umount_crypt_realpath and adjusted (see below)
+    - 38_mount_links
+      partly applied upstream, renamed to 10_mount_links and updated
+  * Initialize signal mask before setting signal handlers (patch
+    01_init_sigmask).
+  * Fixed all hyphen quoting in the manpages: "\-" is a minus and "-" is
+    a hyphen (weird but true).
+  * Improve the documentation in README.Debian and the
+    comment in common-pammount to make clear there is only one
+    include per PAM application, not two.
+    Also, adjust the original README to mention common-pammount.
+    (Closes: #302024) - Fails to unmount on session close and crash
+  * Only call realpath when it exists and is executable. This is due to
+    the fact that
+    a) /usr might not be mounted or
+    b) the realpath package is not installed.
+    Add a Suggests: realpath in debian/control.
+    (Closes: #332325) - should depend on realpath
+  * NULL-terminate command arguments, thanks Paul Hampson for the patch.
+    (Closes: #324735) - does not mount with xdm
+  * Patches 04_g_ascii_strup and 05_warnings: fix deprecated functions
+    and some compiler warnings.
+
+ -- Bastian Kleineidam <calvin@debian.org>  Thu,  6 Oct 2005 02:35:15 +0200
+
+libpam-mount (0.9.25-4) unstable; urgency=low
+
+  * Added fsck to the default allowed options. Also add it to one of the
+    example mount configs to give users a hint that this option is
+    useful for home directory mounts.
+  * Allow to specify a group name as user for volume mounts with
+    '@group'. This lets all users in the given group mount a volume.
+    This option is only allowed in the global config. (Closes: #276322)
+  * Allow relative pathnames with umount.crypt (Closes: #327614)
+  * New patch 38_mount_links thanks to Julien Soula.
+    (Closes: #329094) - fails to check already mounted volume when links
+    are used
+
+ -- Bastian Kleineidam <calvin@debian.org>  Fri, 23 Sep 2005 14:52:38 +0200
+
+libpam-mount (0.9.25-3) unstable; urgency=low
+
+  * Added option to mount.crypt to specify filesystem type.
+    Use like this:
+    $ mount.crypt -o fstype=ext3
+    Or in pam_mount.conf add "fstype=ext3" to the crypt mount options.
+    Note that you only need this if mount(8) does not detect the file
+    system type automatically.
+    (Closes: #324871)
+  * Add cryptsetup LUKS support to (u)mount.crypt. Thanks Florian Frank
+    for the patch (Closes: #325028)
+
+ -- Bastian Kleineidam <calvin@debian.org>  Fri, 26 Aug 2005 12:09:20 +0200
+
+libpam-mount (0.9.25-2) unstable; urgency=low
+
+  * Added FSCK definition to mount.crypt. Thanks Ruediger Otte (Closes:
+    #324287)
+  * Add build dependency on 'check', a C unit testing framework. Right
+    now it is not used, but we don't want to get errors if upstream
+    decides to use it.
+
+ -- Bastian Kleineidam <calvin@debian.org>  Sun, 21 Aug 2005 15:59:18 +0200
+
+libpam-mount (0.9.25-1) unstable; urgency=low
+
+  * New upstream release.
+  * Updated standards version to 3.6.2.1
+
+ -- Bastian Kleineidam <calvin@debian.org>  Wed,  6 Jul 2005 01:12:30 +0200
+
+libpam-mount (0.9.24-1) unstable; urgency=low
+
+  * New upstream release.
+  * Remove bug note about CLOSE_SESSIONS since the default is now "yes".
+
+ -- Bastian Kleineidam <calvin@debian.org>  Mon, 30 May 2005 15:47:52 +0200
+
+libpam-mount (0.9.23-1) unstable; urgency=low
+
+  * New upstream release.
+  * Improved documentation in README.Debian and pam_mount.conf for encrypted
+    loopback mounts.
+
+ -- Bastian Kleineidam <calvin@debian.org>  Tue, 10 May 2005 18:37:19 +0200
+
+libpam-mount (0.9.22-7) unstable; urgency=low
+
+  * added better error reporting when calling pmvarrun
+  * on losetup call pipe password to stdin (Closes: #306594)
+  * fix example pam_mount.conf line in README.Debian for local loopback
+    encrypted volume
+
+ -- Bastian Kleineidam <calvin@debian.org>  Thu, 28 Apr 2005 17:59:44 +0200
+
+libpam-mount (0.9.22-6) unstable; urgency=high
+
+  * Fix IFS setting in mount.crypt and umount.crypt (Closes: #302006)
+
+ -- Bastian Kleineidam <calvin@debian.org>  Tue, 29 Mar 2005 22:18:43 +0200
+
+libpam-mount (0.9.22-5) unstable; urgency=high
+
+  * README.Debian:
+    - Improved the dm-crypt mount point example using a random password
+      keyfile, not a simple password string.
+    - Clarified the mystic keysize calculation (bits vs. bytes).
+    - Added note about how important the .key files are for crypted
+      partitions
+  * Added space to IFS in mount.crypt when splitting options,
+    thanks to Jörg Sommer for the patch. (Closes: #301233).
+  * added more improvements from Jörg Sommer to mount.crypt
+    (Closes: #301234)
+  * Added fsck option to mount.crypt to execute fsck before mounting
+    (Closes: #301232)
+  * urgency still high
+
+ -- Bastian Kleineidam <calvin@debian.org>  Mon, 28 Mar 2005 15:03:23 +0200
+
+libpam-mount (0.9.22-4) unstable; urgency=high
+
+  * Incorporated the lost mount.crypt patches from the 0.9.20 release, and
+    added some more improvements from Jörg Sommer (Closes: #298141)
+    This also (Closes: #297494).
+  * Urgency high, this fix must get into sarge.
+
+ -- Bastian Kleineidam <calvin@debian.org>  Mon,  7 Mar 2005 16:51:02 +0100
+
+libpam-mount (0.9.22-3) unstable; urgency=medium
+
+  * fix mount.crypt options (Closes: #298074)
+    Thanks to Sören Köpping for the patch.
+  * Urgency still medium.
+
+ -- Bastian Kleineidam <calvin@debian.org>  Fri,  4 Mar 2005 16:16:43 +0100
+
+libpam-mount (0.9.22-2) unstable; urgency=medium
+
+  * Fix nfsmount configuration entry to split off the %(MNTPT) before
+    the options.
+  * Fix all -o options to not include a space that will not be split
+    off before calling exec(3).
+    (Closes: #297200) - libpam-mount doesn't work after the last update
+    (Closes: #297494) - mount.crypt doesn't seem to work
+  * Urgency medium since without this fix some mount types will not
+    work.
+
+ -- Bastian Kleineidam <calvin@debian.org>  Tue,  1 Mar 2005 00:05:27 +0100
+
+libpam-mount (0.9.22-1) unstable; urgency=low
+
+  * New upstream release.
+  * Dropped patches applied upstream, and updated all others.
+  * New patches:
+    - 29_crypto_compile_fix: add missing includes
+    - 31_no_ws_arg_split: support whitespace in command arguments
+      (Closes: #296417) - does not mount smb shares with whitespace
+
+ -- Bastian Kleineidam <calvin@debian.org>  Tue, 22 Feb 2005 18:32:45 +0100
+
+libpam-mount (0.9.20-11) unstable; urgency=low
+
+  * New patch 28_converse_resp_check:
+     - Detect invalid converse responses and set retval accordingly.
+    Prevents triggered assertion in smbd PAM usage (Closes: #288780)
+
+ -- Bastian Kleineidam <calvin@debian.org>  Wed, 26 Jan 2005 23:40:44 +0100
+
+libpam-mount (0.9.20-10) unstable; urgency=low
+
+  * new patch 26_unmount_wrong_directory:
+      - fix grep pattern for mount point.
+    (Closes: #286705) Thanks to Brian Rolfe for the patch.
+  * new patch 27_fix_dmdevice_name:
+      - search for correct crypted device
+    (Closes: #286707) Thanks to Brian Rolfe for the patch.
+  * Adjusted all patch descriptions.
+
+ -- Bastian Kleineidam <calvin@debian.org>  Tue, 21 Dec 2004 23:19:49 +0100
+
+libpam-mount (0.9.20-9) unstable; urgency=high
+
+  * Updated (u)mount.crypt patches.
+  * New patch 25_set_pam_error: set pam error return code in case of a
+    successful but with a NULL result get_password call
+    (Closes: #284234), and thus urgency high
+  * Note in REAMDE.Debian that common-pammount should be included
+    after common-auth and after common-session.
+
+ -- Bastian Kleineidam <calvin@debian.org>  Thu,  9 Dec 2004 14:17:32 +0100
+
+libpam-mount (0.9.20-8) unstable; urgency=low
+
+  * replace note about ssh in common-pammount with a pointer to
+    README.Debian
+  * new patch 24_ssl_string_error: print human readable SSL error
+    messages
+
+ -- Bastian Kleineidam <calvin@debian.org>  Tue,  9 Nov 2004 23:44:53 +0100
+
+libpam-mount (0.9.20-7) unstable; urgency=low
+
+  * improved tmpfs example (patch again from Mike Hommey)
+    (Closes: #275746)
+
+ -- Bastian Kleineidam <calvin@debian.org>  Wed, 13 Oct 2004 10:49:15 +0200
+
+libpam-mount (0.9.20-6) unstable; urgency=medium
+
+  * fixed typos and wording in package description
+  * added encrypted loopback mount initialization docs to README.Debian
+  * updated the bugs list in README.Debian, noting that libpam-mount
+    does not work with ssh, only with ssh-krb5
+    With this documentation the severity of bug #254679 can be lowered
+    from "important" to "normal".
+  * urgency medium since the ssh incompatibility documentation is
+    important
+
+ -- Bastian Kleineidam <calvin@debian.org>  Wed,  6 Oct 2004 18:54:32 +0200
+
+libpam-mount (0.9.20-5) unstable; urgency=low
+
+  * New patch 23_fix_fsck_target: the fsck target was hardcoded to
+    /dev/loop7, the patch fixes this to use the correct volume name.
+    (Closes: #273853)
+  * Added interesting tmpfs example from Mike Hommey to the config docs.
+  * Added the cryptsetup and openssl packages to the suggestions. They are
+    used for dm-crypt and cryptoloop mounts.
+  * Added more documentation for the dm-crypt mount type to the
+    configuration file and to README.Debian.
+  * Fixed the cryptsetup option processing for mount.crypt.
+    (Closes: #270281)
+
+ -- Bastian Kleineidam <calvin@debian.org>  Sat,  2 Oct 2004 14:04:16 +0200
+
+libpam-mount (0.9.20-4) unstable; urgency=medium
+
+  * Make log_argv function non-static (Closes: #271604)
+    Urgency medium since this is grave.
+  * More documentation cleanup wrt. root versus user permissions. Thanks
+    to Ariel for clarifying the problems.
+
+ -- Bastian Kleineidam <calvin@debian.org>  Tue, 14 Sep 2004 14:10:44 +0200
+
+libpam-mount (0.9.20-3) unstable; urgency=low
+
+  * More debug messages, now the executed mount commands are actually
+    printed out when debugging is on :) (Closes: #271447)
+  * Better documentation of what mounts can be executed as user and
+    what mounts need root permissions, ie. either an fstab entry or
+    an entry in the global configuration. (Closes: #259032)
+  * Better document the fact that specified mount parameters
+    should match the given parameters in the mount commands.
+    (Closes: #271431)
+
+ -- Bastian Kleineidam <calvin@debian.org>  Mon,  6 Sep 2004 16:50:45 +0200
+
+libpam-mount (0.9.20-2) unstable; urgency=low
+
+  * Added a keysize option to mount.crypt. (Closes: #268261)
+  * fix a typo in mount.crypt script and make the call to cryptsetup use
+    an absolute path
+  * added symlink /sbin/mount.crypt -> /usr/bin/mount.crypt so that
+    mount -t crypt actually works (Closes: #267285)
+  * All of the above patches are the work of Vance Lankhaar. Thanks!
+  * fix mount.crypt to accept options after the device and directory
+    name, since /bin/mount uses this ordering.
+
+ -- Bastian Kleineidam <calvin@debian.org>  Sun,  5 Sep 2004 14:05:12 +0200
+
+libpam-mount (0.9.20-1) unstable; urgency=low
+
+  * New upstream release.
+    - fixes cifs mount problems (Closes: #259028)
+  * use cdbs to build the package
+  * update and correct the pmvarrun.8 man page
+  * unfuzzed and/or renamed patches:
+     01_zlib_compile_fix
+     03_mkehd_bash_script
+     04_debian_install_prefix
+     05_disable_mntcheck
+     08_pam_acct_mgmt
+     09_enable_static_compile
+     10_chown_user_mount_count
+     11_crypt_types
+     12_dont_free_dirname
+     13_empty_options
+     14_include_fsuid
+     15_no_error_warnings
+  * patches updated to use g_spawn_async_with_pipes():
+     02_setuid_helper
+     06_user_mount_tools
+     07_setuid_user
+  * fix more warnings by adding -fno-strict-aliasing to the compile
+    options (updated patch 16_compiler_warnings)
+  * use LOG_AUTHPRIV as syslog level (new patch 17_auth_log_level)
+  * print error messages of failed PAM calls with pam_strerror()
+    (new patch 18_more_err_msgs)
+  * Re-read the PAM user if it is not there. Needed for ssh since all
+    ssh PAM functions are called in a separate forked process.
+    (new patch 19_reread_user)
+  * get mount name from loop device (eg if mtab is a symlink)
+    (new patch 20_loop_in_mtab_symlink)
+    Thanks to Jörg Sommer for the patch (Closes: #259228)
+
+ -- Bastian Kleineidam <calvin@debian.org>  Mon, 19 Jul 2004 15:01:48 +0200
+
+libpam-mount (0.9.18-2) unstable; urgency=high
+
+  * get rid of automake stuff, put patches into Makefile.in's intead of
+    Makefile.am (Closes: #256029)
+  * update patch 02_setuid_helper:
+    move set_uid helper function in misc*.c before usage
+  * new patch 14_include_fsuid:
+    include sys/fsuid.h when HAVE_SETFSUID is defined
+  * the two previous changes above fix a compile error on powerpc;
+    thanks to J¶rg Sommer for the patches (Closes: #256032)
+  * new patch 15_no_error_warnings:
+    soften -Werror to -Wall, I don't want every warning to be a
+    compile error, esp. since new versions of gcc tend to spew out
+    a lot or warnings
+  * new patch 16_fix_warnings:
+    Fix various compiler warnings like unused variables and missing
+    braces. Thanks to J¶rg Sommer for the patches. (Closes: #256042)
+  * urgency high since this release fixes FTBFS errors
+
+ -- Bastian Kleineidam <calvin@debian.org>  Thu, 24 Jun 2004 16:54:46 +0200
+
+libpam-mount (0.9.18-1) unstable; urgency=low
+
+  * New upstream release (Closes: #253996)
+    - adjust all patches to upstream code reworks
+  * added manpages mount.crypt(1), umount.crypt(1), pmvarrun(8)
+
+ -- Bastian Kleineidam <calvin@debian.org>  Tue, 15 Jun 2004 13:50:33 +0200
+
+libpam-mount (0.9.17-1) unstable; urgency=low
+
+  * New upstream release
+  * patch 01_zlib_compile_fix
+    removed, applied upstream
+  * patch 06_fix_config
+    updated
+  * patch 07_use_user_mount
+    updated
+  * patch 10_chown_user_mount_count
+    updated
+  * patch 11_crypt_types
+    updated
+  * patch 12_dont_free_dirname
+    updated
+  * patch 13_empty_options
+    new; set OPTIONS config value to empty string if it is not supplied
+    in pam_mount.conf. (Closes #241370)
+  * use and build-depend on automake 1.8
+
+ -- Bastian Kleineidam <calvin@debian.org>  Mon, 26 Apr 2004 14:14:16 +0200
+
+libpam-mount (0.9.13-2) unstable; urgency=low
+
+  * 11_crypt_types patch updated:
+    more ia64 warnings fixed, hopefully I got them all
+
+ -- Bastian Kleineidam <calvin@debian.org>  Mon,  9 Feb 2004 00:31:38 +0100
+
+libpam-mount (0.9.13-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Bastian Kleineidam <calvin@debian.org>  Fri,  6 Feb 2004 13:47:37 +0100
+
+libpam-mount (0.9.11-3) unstable; urgency=low
+
+  * New patches
+    - 11_crypt_types
+      fix warnings on ia64 build (Closes: #230946)
+    - 12_dont_free_dirname
+      dont free dirname() return argument (Closes: #230429), thanks Andrew
+      Ruder for detecting this
+
+ -- Bastian Kleineidam <calvin@debian.org>  Tue,  3 Feb 2004 23:44:55 +0100
+
+libpam-mount (0.9.11-2) unstable; urgency=low
+
+  * added libglib2.0-dev build dependency
+
+ -- Bastian Kleineidam <calvin@debian.org>  Mon, 12 Jan 2004 16:12:42 +0100
+
+libpam-mount (0.9.11-1) unstable; urgency=low
+
+  * New upstream release.
+  * updated patches:
+    - 06_fix_config
+    - 07_use_user_mount
+    - 10_chown_user_mount_count
+  * updated README.Debian for cryptoloop stuff
+
+ -- Bastian Kleineidam <calvin@debian.org>  Thu,  8 Jan 2004 19:35:40 +0100
+
+libpam-mount (0.9.10-1) unstable; urgency=low
+
+  * New upstream release (Closes: #225320)
+    attention: pam_mount.conf syntax has changed, please update your
+    configuration files!
+  * removed patches
+    - 01_fix_functions
+      applied upstream
+  * new patches
+    - 01_zlib_compile_fix
+      added -lz to linker flags
+    - 02_setuid_helper
+      helper function to set uid of current process to given username
+      this function uses w4rn instead of l0g now (Closes: #218375)
+    - 03_mkehd_bash_script
+      the script uses array variables which are only provided by bash,
+      so use #!/bin/bash
+    - 06_fix_config
+      disable BSD mount check and escape quotes in OPTION var
+  * updated patches
+    - 05_setuid_user
+      use the set_uid helper function and make sure all commands call
+      setuid if defined by a user-specified config file
+    - 07_use_user_mount
+      use user-callable mount commands smb(u)mount,ncp(u)mount
+    - 08_pam_acct_mgmt
+      add PAM account management stub
+    - 09_enable_static_compile
+      enable static compilation
+    - 10_chown_user_mount_count
+      make user count file owned by the logged in user
+  * added libz build dependency
+
+ -- Bastian Kleineidam <calvin@debian.org>  Wed,  7 Jan 2004 19:19:36 +0100
+
+libpam-mount (0.9.5-2) unstable; urgency=low
+
+  * Added note about cryptoloop patch for 2.4.22 kernels in
+    README.Debian
+
+ -- Bastian Kleineidam <calvin@debian.org>  Wed,  1 Oct 2003 19:13:44 +0200
+
+libpam-mount (0.9.5-1) unstable; urgency=low
+
+  * New upstream release.
+    - fixes smb volume name expansion 
+      (Closes: #212820) (Closes: #210728) (Closes: #213565)
+  * doh, use *UMOUNT constants instead of *MOUNT in do_unmount
+  * add dependency on mount (>= 2.12-3) to be able to mount encrypted
+    home volumes with 2.6 kernels, kernels from www.kerneli.org, and
+    vanilla 2.4.22 kernels with the cryptoloop patch found at
+    http://www.kernel.org/pub/linux/kernel/crypto/v2.4/testing/patch-cryptoloop-jari-2.4.22.0
+
+ -- Bastian Kleineidam <calvin@debian.org>  Mon, 29 Sep 2003 08:17:25 +0200
+
+libpam-mount (0.9.4-1) unstable; urgency=low
+
+  * New upstream release. (Closes: #208052)
+  * removed 10_fix_key_decryption applied upstream
+  * updated all other patches
+  * updated README.Debian with installation instructions
+  * added /etc/pam.d/common-pammount for inclusion in PAM configs
+  * Standards version 3.6.1, no changes
+  * rerun debian/autogen.sh with new automake 1.7.7
+
+ -- Bastian Kleineidam <calvin@debian.org>  Tue,  9 Sep 2003 09:22:10 +0200
+
+libpam-mount (0.9.2-3) unstable; urgency=low
+
+  * conflict with old libncp versions
+  * new patch 10_fix_key_decryption; patch from nokos@gmx.net to fix
+    decryption of filesystem keys. Thanks, nokos. (Closes: #200305)
+
+ -- Bastian Kleineidam <calvin@debian.org>  Mon,  7 Jul 2003 17:56:45 +0200
+
+libpam-mount (0.9.2-2) unstable; urgency=low
+
+  * added README_SSHD to documentation
+
+ -- Bastian Kleineidam <calvin@debian.org>  Sat,  5 Jul 2003 12:58:45 +0200
+
+libpam-mount (0.9.2-1) unstable; urgency=low
+
+  * New upstream release.
+    - does not bail out on failed close() in error path, which seemed
+      to confuse xdm and gdm.
+      Tested only with xdm, but this Closes: #192520
+  * updated/unfuzzed patches
+    - 01_fix_functions
+    - 04_debian_install_prefix (renamed)
+    - 05_setuid_user
+    - 06_use_user_mount
+    - 07_disable_mntcheck
+    - 08_pam_acct_mgmt
+    - 09_enable_static_compile
+  * removed patches applied upstream
+    - 02_remove_int_pointer_casts
+    - 10_fix_dotconf_realloc
+
+ -- Bastian Kleineidam <calvin@debian.org>  Wed, 25 Jun 2003 00:41:06 +0200
+
+libpam-mount (0.5.16-2) unstable; urgency=low
+
+  * new patch 10_fix_dotconf_realloc fixing off-by-one error in realloc
+  * Standards version 2.5.10 (no changes)
+
+ -- Bastian Kleineidam <calvin@debian.org>  Tue, 27 May 2003 16:37:06 +0200
+
+libpam-mount (0.5.16-1) unstable; urgency=low
+
+  * New upstream release:
+    - fixed libcrypto detection (Closes: #193996)
+  * removed all patches applied upstream, remaining are:
+    - 02_remove_int_pointer_casts
+    - 04_debian_use_prefix_on_install
+    - 05_setuid_user
+    - 06_use_user_mount
+    - 07_disable_mntcheck
+    - 08_pam_acct_mgmt
+    - 09_enable_static_compilation
+  * new patches:
+    - 01_fix_functions: rename log() to pm_log() to avoid conflict
+      with the math log() logarithm function, and fix the read_password
+      definition
+
+ -- Bastian Kleineidam <calvin@debian.org>  Tue, 20 May 2003 15:22:52 +0200
+
+libpam-mount (0.5.14-2) unstable; urgency=low
+
+  * 11_pam_acct_mgmt - add account management routine
+  * 12_enable_static_compilation - add module structure for static
+    compile
+
+ -- Bastian Kleineidam <calvin@debian.org>  Fri,  9 May 2003 10:45:06 +0200
+
+libpam-mount (0.5.14-1) unstable; urgency=low
+
+  * New upstream release.
+  * Updated patch 07_setuid_user:
+    only setuid(user) on luserconf entries (Closes: #190267)
+  * New patch 10_disable_mntcheck:
+    disable the BSD mntcheck config entry, it crashes on Linux systems
+  * add note about current Debian mount(8) bugs in README.Debian
+
+ -- Bastian Kleineidam <calvin@debian.org>  Thu,  8 May 2003 21:50:39 +0200
+
+libpam-mount (0.5.13-2) unstable; urgency=low
+
+  * execute debian/autogen.sh with /bin/sh (Closes: #190196)
+
+ -- Bastian Kleineidam <calvin@debian.org>  Tue, 22 Apr 2003 20:56:26 +0200
+
+libpam-mount (0.5.13-1) unstable; urgency=low
+
+  * New upstream release.
+  * The following patches are applied:
+    - 01_add_log_vargs
+      make a log function with variable arguments
+    - 02_remove_int_pointer_casts
+      fix compile on 64bit platforms
+    - 03_catch_errors
+      Catch return values in close() and asprintf().
+    - 04_debian_use_prefix_on_install
+      Install files into debian/$package, not root dir
+      This requires running debian/autogen.sh to regenerate the Makefiles
+    - 05_fix_buffer_overflow
+      Fix some potential buffer overflows in option handling
+    - 06_fix_mount_options
+      Fix ncpfs mount options (Closes: #187412)
+    - 07_setuid_user
+      originally, mounts and umounts got executed as root; now, they
+      get executed as the user requesting the service.
+      umount as root was a security hole allowing any user to umount
+      any volume.
+      the drawback is we cannot use mount(8) anymore, see patch 08
+    - 08_use_user_mount
+      mount cannot be executed as a normal user, so be sure to use
+      smbmount resp. ncpmount for this. Likewise for umount.
+    - 09_fix_memleak_on_exit
+      free config on exit
+
+ -- Bastian Kleineidam <calvin@debian.org>  Sun, 13 Apr 2003 13:39:21 +0200
+
+libpam-mount (0.5.10-6) unstable; urgency=low
+
+  * fix option order for mount.ncp (Closes: #187412)
+  * 04_set_gid_uid.dpatch:
+    set effective gid and uid to the logged in user before mounting
+    Thanks to Daniel Dehennin for the patch.
+  * 05_typos.dpatch:
+    fix some typos in source
+    Thanks to Daniel Dehennin for the patch.
+
+ -- Bastian Kleineidam <calvin@debian.org>  Sat, 12 Apr 2003 18:02:05 +0200
+
+libpam-mount (0.5.10-5) unstable; urgency=low
+
+  * fix typos in description
+  * pass options to ncpmount (Closes: #184266)
+    Thanks to Daniel Dehennin for the patch
+  * use dpatch for those patches
+  * use debian/compat instead of DH_COMPAT
+
+ -- Bastian Kleineidam <calvin@debian.org>  Wed,  2 Apr 2003 15:32:47 +0200
+
+libpam-mount (0.5.10-4) unstable; urgency=low
+
+  * Remove casts failing on 64bit platforms (Closes: #186874)
+  * Suggest ncpfs and smbfs
+  * Standards version 3.5.9 (no changes)
+
+ -- Bastian Kleineidam <calvin@debian.org>  Mon, 31 Mar 2003 02:28:26 +0200
+
+libpam-mount (0.5.10-3) unstable; urgency=low
+
+  * move ncpmount -V volume option to correct position
+
+ -- Bastian Kleineidam <calvin@debian.org>  Mon,  3 Mar 2003 21:59:50 +0100
+
+libpam-mount (0.5.10-2) unstable; urgency=low
+
+  * fix memory corruption in pmhelper argument parsing (Closes: #180586)
+
+ -- Bastian Kleineidam <calvin@debian.org>  Tue, 11 Feb 2003 20:00:31 +0100
+
+libpam-mount (0.5.10-1) unstable; urgency=low
+
+  * Initial release. (Closes: #177079).
+  * Reupload: Copyright is LGPL, not GPL as stated in the first upload
+
+ -- Bastian Kleineidam <calvin@debian.org>  Wed, 22 Jan 2003 02:08:28 +0100

@@ -1,0 +1,17 @@
+Allow numbers at the beginning of user names in pmvarrun.
+Note that this patch is Debian-specific; other distributions might not
+support this.
+
+Index: libpam-mount-1.32/src/pmvarrun.c
+===================================================================
+--- libpam-mount-1.32.orig/src/pmvarrun.c	2009-11-17 05:10:36.000000000 +0100
++++ libpam-mount-1.32/src/pmvarrun.c	2009-11-17 05:11:01.000000000 +0100
+@@ -109,7 +109,7 @@ static bool valid_username(const char *n
+ 	 * more characters.
+ 	 */
+ 	if (!((*n >= 'A' && *n <= 'Z') || (*n >= 'a' && *n <= 'z') ||
+-	    *n == '_'))
++	    (*n >= '0' && *n <= '9') || *n == '_'))
+ 		return false;
+ 
+ 	while (*n != '\0') {

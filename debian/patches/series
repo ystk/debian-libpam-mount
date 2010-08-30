@@ -1,0 +1,5 @@
+kfreebsd_compile_fixes
+mnt_fallback
+allow_usernames_beginning_with_numbers
+debian_manpages
+allow_cryptsetup_disable

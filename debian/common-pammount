@@ -1,0 +1,11 @@
+# The file inclusion of /etc/pam.d/common-pammount is now deprecated.
+# It has been replaced with pam-auth-update(8). Read the
+# pam-auth-update(8) manpage for more information.
+#
+# As a result, all manually added inclusions of common-pammount of
+# files in /etc/pam.d should be removed or commented out.
+
+# These lines exist for backward compatibility.
+
+auth       optional   pam_mount.so
+session    optional   pam_mount.so

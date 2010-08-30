@@ -1,0 +1,29 @@
+Check for __FreeBSD_kernel__ on GNU/*BSD systems, and use
+only mount-bsd.c on such systems by testing for !HAVE_GETMNTINFO
+
+Index: libpam-mount-1.32/src/mount-bsd.c
+===================================================================
+--- libpam-mount-1.32.orig/src/mount-bsd.c	2009-11-17 05:16:27.000000000 +0100
++++ libpam-mount-1.32/src/mount-bsd.c	2009-11-17 05:16:37.000000000 +0100
+@@ -21,7 +21,7 @@
+ #include <libHX/string.h>
+ #include "pam_mount.h"
+ 
+-#if defined(__FreeBSD__)
++#if defined(__FreeBSD__) || defined(__FreeBSD_kernel__)
+ #	define local_statfs statfs
+ #	define LOCAL_NOWAIT MNT_NOWAIT
+ #elif defined(__NetBSD__)
+Index: libpam-mount-1.32/src/mount-sysv.c
+===================================================================
+--- libpam-mount-1.32.orig/src/mount-sysv.c	2009-11-17 05:16:54.000000000 +0100
++++ libpam-mount-1.32/src/mount-sysv.c	2009-11-17 05:17:06.000000000 +0100
+@@ -7,7 +7,7 @@
+  *	of the License, or (at your option) any later version.
+  */
+ #include "config.h"
+-#ifdef HAVE_GETMNTENT
++#if defined(HAVE_GETMNTENT) && !defined(HAVE_GETMNTINFO)
+ #include <errno.h>
+ #include <stdbool.h>
+ #include <stdio.h>

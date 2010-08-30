@@ -1,0 +1,121 @@
+For upgrading from 0.4x installations, fall back to mtab parsing on unmount.
+
+Index: libpam-mount-1.32/src/mtab.c
+===================================================================
+--- libpam-mount-1.32.orig/src/mtab.c	2009-11-17 05:12:14.000000000 +0100
++++ libpam-mount-1.32/src/mtab.c	2009-11-17 05:12:49.000000000 +0100
+@@ -31,6 +31,7 @@
+ #include <stdio.h>
+ #include <string.h>
+ #include <unistd.h>
++#include <mntent.h>
+ #include <libHX/ctype_helper.h>
+ #include <libHX/defs.h>
+ #include <libHX/string.h>
+@@ -336,6 +337,68 @@ int pmt_cmtab_get(const char *spec, enum
+ 	return ret;
+ }
+ 
++int pmt_smtab_get(const char *spec, bool is_cont, char **mountpoint,
++    char **container, char **loop_device, char **crypto_device)
++{
++	char *final_dir = NULL, *final_fsname = NULL;
++	const struct mntent *mnt;
++	FILE *fp;
++	int ret;
++
++	if (mountpoint    != NULL) *mountpoint    = NULL;
++	if (container     != NULL) *container     = NULL;
++	if (loop_device   != NULL) *loop_device   = NULL;
++	if (crypto_device != NULL) *crypto_device = NULL;
++	if (is_cont) {
++		/*
++		 * Need to find the directory for it, so that we can then
++		 * look for the directory in kmtab and find the crypto device.
++		 */
++		fp = setmntent(pmt_smtab_file, "r");
++		if (fp == NULL) {
++			fprintf(stderr, "Cannot inspect mtab %s: %s\n",
++			        pmt_smtab_file, strerror(errno));
++			return -ENXIO;
++		}
++
++		while ((mnt = getmntent(fp)) != NULL)
++		    if (strcmp(mnt->mnt_fsname, spec) == 0) {
++                        free(final_dir);
++			final_dir = HX_strdup(mnt->mnt_dir);
++		    }
++
++		endmntent(fp);
++	}
++	if (final_dir == NULL)
++	    final_dir = HX_strdup(spec);
++	*mountpoint = final_dir;
++
++	fp = setmntent(pmt_kmtab_file, "r");
++	if (fp == NULL) {
++		fprintf(stderr, "Cannot inspect kmtab %s: %s\n",
++		        pmt_kmtab_file, strerror(errno));
++		return -ENXIO;
++	}
++
++	while ((mnt = getmntent(fp)) != NULL)
++		if (strcmp(mnt->mnt_dir, final_dir) == 0) {
++			free(final_fsname);
++			final_fsname = HX_strdup(mnt->mnt_fsname);
++		}
++
++	endmntent(fp);
++	if (final_fsname == NULL) {
++		fprintf(stderr, "%s not found in kmtab %s\n",
++			spec, pmt_kmtab_file);
++		ret = 0;
++	}
++	else {
++	    *crypto_device = final_fsname;
++	    ret = 1;
++	}
++        return ret;
++}
++
+ /**
+  * pmt_mtab_remove - remove entry from mtab-style file
+  * @file:	file to inspect and modify
+Index: libpam-mount-1.32/src/mtcrypt.c
+===================================================================
+--- libpam-mount-1.32.orig/src/mtcrypt.c	2009-11-17 05:13:28.000000000 +0100
++++ libpam-mount-1.32/src/mtcrypt.c	2009-11-17 05:14:19.000000000 +0100
+@@ -556,9 +556,18 @@ static int mtcr_umount(struct umount_opt
+ 		fprintf(stderr, "pmt_cmtab_get: %s\n", strerror(-ret));
+ 		return 0;
+ 	} else if (ret == 0) {
+-		fprintf(stderr, "%s is not mounted (according to cmtab)\n",
++		fprintf(stderr, "%s is not mounted (according to cmtab). Falling back to mtab.\n",
+ 		        opt->object);
+-		return 1;
++                ret = pmt_smtab_get(opt->object, opt->is_cont, &mountpoint, &mount_info.container,
++				    &mount_info.loop_device, &mount_info.crypto_device);
++		if (ret < 0) {
++		    fprintf(stderr, "pmt_smtab_get: %s\n", strerror(-ret));
++		    return 0;
++		} else if (ret == 0) {
++		    fprintf(stderr, "%s is not mounted (according to mtab).\n",
++		        opt->object);
++		    return 1;
++		}
+ 	}
+ 
+ 	umount_args[argk++] = "umount";
+Index: libpam-mount-1.32/src/pam_mount.h
+===================================================================
+--- libpam-mount-1.32.orig/src/pam_mount.h	2009-11-17 05:14:43.000000000 +0100
++++ libpam-mount-1.32/src/pam_mount.h	2009-11-17 05:15:03.000000000 +0100
+@@ -275,6 +275,8 @@ enum cmtab_field {
+ 
+ extern int pmt_smtab_add(const char *, const char *,
+ 	const char *, const char *);
++extern int pmt_smtab_get(const char *, bool,
++	char **, char **, char **, char **);
+ extern int pmt_smtab_remove(const char *, enum smtab_field);
+ extern int pmt_smtab_mounted(const char *, const char *,
+ 	int (*)(const char *, const char *));

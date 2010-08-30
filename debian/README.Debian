@@ -1,0 +1,150 @@
+Installation on a Debian system
+===============================
+
+Edit the global configuration file /etc/security/pam_mount.conf.xml
+and add the volumes you want to mount upon login.
+If you enable the "luserconf" entry, every user can specify their
+own mounts in $HOME/.pam_mount.conf.xml.
+Note that user-specified volumes are mounted under the logged in user,
+not as root.
+
+See the pam_mount(8) and pam_mount.conf(5) man pages for more information.
+
+All changes to the file /etc/security/pam_mount.conf.xml
+take effect on the next login, so the next time a login shell is started,
+any new configured volumes will be read and mounted.
+
+If xmllint is installed, the configuration file can be validated with
+the following command:
+	xmllint --nonet --noout --loaddtd --valid
+	--path /usr/share/xml/pam_mount/dtd/pam_mount.conf.xml.dtd
+	/etc/security/pam_mount.conf.xml
+
+
+Configuration of PAM applications
+==================================
+
+This package uses pam-auth-update(8) to configure itself for all PAM
+applications. See the pam-auth-update(8) manpage for more info.
+
+
+Required packages for specific mount types
+==========================================
+All the packages below are suggested, however you might
+not need all of them to successfully use libpam-mount.
+
+Mount type			Required packages
+-------------------------------------------------
+Samba (smbfs)			smbfs
+NetWare (ncpfs)			ncpfs
+LUKS or Dm-crypt (crypt)	cryptsetup, openssl, psmisc, fuser
+cryptoloop			openssl, cryptoloop-source (for 2.4 kernels)
+Fuse (fuser)			fuse-utils
+Truecrypt (truecrypt)		no official package available
+WebDAV (davfs)			davfs2
+
+All filesystems also require the appropriate kernel support.
+See /proc/filesystems for a list of supported filesystems of the
+current kernel.
+
+
+Example: LUKS encrypted home partition
+--------------------------------------
+The LUKS disk encryption format is supported with cryptsetup >= 1.0.3.
+Generate a LUKS partition with:
+$ luksformat -t ext3 /dev/hda8
+Then, add an entry like this:
+<volume user="test" mountpoint="~" path="/dev/hda8" fstype="crypt"
+ options="exec,fsck,nodev,nosuid" />
+
+
+Example: dm-crypt encrypted home partition
+------------------------------------------
+The root user has to initialize the filesystem with mkfs before
+mounting it the first time.
+$ dd if=/dev/urandom bs=1c count=32 | \
+  openssl enc -aes-256-ecb > /home/test.key
+enter aes-256-ecb encryption password: <enter your login password>
+
+Note: keep a backup of the .key file! All your encrypted data will
+be inaccessible and therefore lost if the .key file is damaged!
+
+The cryptsetup -s option needs bits, not bytes, ie. it has to have
+32*8=256 as argument.
+$ openssl enc -d -aes-256-ecb -in /home/test.key | \
+  cryptsetup -c twofish -h sha512 -s 256 create _dev_hdb8 /dev/hdb8
+enter aes-256-ecb decryption password: <enter your login password>
+
+You can use any file system type; in this example it is xfs.
+$ mkfs -t xfs /dev/mapper/_dev_hdb8
+$ cryptsetup remove _dev_hdb8
+
+Then add a line like this into pam_mount.conf.xml:
+<volume user="test" mountpoint="~" path="/dev/hdb8" fstype="crypt"
+ fskeycipher="aes-256-ecb" fskeypath="/home/test.key"
+ options="exec,fsck,nodev,nosuid,fstype=xfs,cipher=twofish,hash=sha512,keysize=256"
+/>
+
+Since this mounts the users home directory, you should change the
+PAM level from "optional" to "required" in /etc/pam.d/common-pammount.
+
+
+Example: Loopback encrypted home partition
+------------------------------------------
+The root user has to initialize the filesystem with mkfs before
+mounting it the first time:
+$ dd if=/dev/urandom of=/home/test.img bs=1M count=<image size in MB>
+$ dd if=/dev/urandom bs=1c count=32 | \
+  openssl enc -aes-256-ecb > /home/test.key
+enter aes-256-ecb encryption password: <enter your login password>
+
+Note: keep a backup of the .key file! All your encrypted data will
+be inaccessible and therefore lost if the .key file is damaged!
+
+The cryptoloop module is not loaded automatically. Otherwise you
+can get the infamous Unix-ish loop device error message
+"ioctl:LOOP_SET_STATUS: Invalid argument".
+To defeat that, load the module manually:
+$ modprobe -q cryptoloop
+
+The losetup -k option needs bits, not bytes, ie. it has to have
+32*8=256 as argument.
+$ openssl enc -d -aes-256-ecb -in /home/test.key | \
+  losetup -e aes -k 256 -p0 /dev/loop0 /home/test.img
+
+You can use any file system type; in this example it is ext3.
+$ mkfs -t ext3 /dev/loop0
+$ losetup -d /dev/loop0
+
+Then add a line like this into /etc/security/pam_mount.conf.xml:
+<volume user="test" mountpoint="~"
+ path="/home/test.img" fstype="ext3"
+ fskeycipher="aes-256-ecb" fskeypath="/home/test.key"
+ options="exec,fsck,nodev,nosuid,loop,encryption=aes,keybits=256" />
+
+Since this mounts the users home directory, you should change the
+PAM level from "optional" to "required" in /etc/pam.d/common-pammount.
+
+
+Notes and bugs
+--------------
+- If you use SSH, you have to adjust /etc/ssh/sshd_config like this:
+
+  UsePAM yes
+  UsePrivilegeSeparation no
+  ChallengeResponseAuthentication no
+  PasswordAuthentication yes
+
+- Does not work properly with most (all?) ssh implementations
+  + openssh-server and the old ssh-krb5 mount ok, but do not unmount
+    see bug:
+    http://bugs.debian.org/372680
+  + lsh-server does not work at all; it does not use PAM
+
+- Only works with gksu when debugging is disabled. Be sure to set
+  "debug 0" in /etc/security/pam_mount.conf.xml if you use gksu.
+
+Some PAM modules require a mounted home directory (eg.
+pam_gnome_keyring used in gdm). These modules have to be moved
+after the common-pammount include if home directories are mounted.
+

@@ -1,0 +1,62 @@
+libpam-mount (1.27-3) unstable; urgency=low
+
+  * The file inclusion of /etc/pam.d/common-pammount is now deprecated.
+    It has been replaced with pam-auth-update(8). Read the
+    pam-auth-update(8) manpage for more information.
+    .
+    As a result, all manually added inclusions of common-pammount of
+    files in /etc/pam.d should be removed or commented out.
+    A note will be printed on the console if such inclusions are
+    detected on upgrade.
+
+ -- Bastian Kleineidam <calvin@debian.org>  Tue, 18 Aug 2009 22:29:29 +0200
+
+libpam-mount (1.2+gitaa4791f-1) unstable; urgency=low
+
+  * Upgrading from version << 0.20 is not supported anymore.
+    Please install an intermediate version 0.49 for upgrading.
+
+ -- Bastian Kleineidam <calvin@debian.org>  Wed, 12 Nov 2008 17:48:27 +0100
+
+libpam-mount (0.21-2) unstable; urgency=low
+
+  * When upgrading from versions << 0.20 the old configuration will
+    automatically be converted to the new format and stored at
+    /etc/security/pam_mount.conf.xml.
+    The default configuration will be available at
+    /etc/security/pam_mount.conf.xml.default.
+    .
+    Note that per-user configuration files ($HOME/.pam_mount.conf)
+    have still to be converted manually.
+    .
+    IMPORTANT: please check the validity of the converted file
+    /etc/security/pam_mount.conf.xml, since the converter might
+    have introduced bugs.
+
+ -- Bastian Kleineidam <calvin@debian.org>  Tue, 18 Sep 2007 19:31:13 +0200
+
+libpam-mount (0.20-1) unstable; urgency=low
+
+  * The pam_mount.conf syntax changed in version 0.20.0. It is now
+    in an XML format and stored in /etc/security/pam_mount.conf.xml.
+    .
+    You can convert your old pam_mount.conf file to the new XML syntax
+    with the script
+    /usr/share/doc/libpam-mount/examples/convert_pam_mount_conf.pl.
+    .
+    Note that this script needs the libxml-writer-perl package installed.
+
+ -- Bastian Kleineidam <calvin@debian.org>  Wed, 05 Sep 2007 20:02:46 +0200
+
+libpam-mount (0.10.0-2) unstable; urgency=low
+
+  * The pam_mount.conf syntax changed in version 0.10.0.
+    Old 'local' filesystem types are now invalid. Replace them with
+    the actual filesystem type of the partition you are mounting.
+    For example a line:
+      volume user local - /home/user.img /home/user loop,user,exec,encryption=aes,keybits=256 - -
+    now must be:
+      volume user ext3 - /home/user.img /home/user loop,user,exec,encryption=aes,keybits=256 - -
+  * Furthermore, the old "smb" filesystem type must be renamed to "smbfs".
+
+ -- Bastian Kleineidam <calvin@debian.org>  Sun,  4 Dec 2005 20:09:04 +0100

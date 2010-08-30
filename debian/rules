@@ -1,0 +1,37 @@
+#!/usr/bin/make -f
+# using the common debian build system (cdbs)
+
+# helper var
+BASE:=$(CURDIR)/debian/libpam-mount
+# Only use libcrypt on Linux systems
+DEB_HOST_ARCH_OS:=$(shell dpkg-architecture -qDEB_HOST_ARCH_OS)
+ifeq ($(DEB_HOST_ARCH_OS),linux)
+EXTRACONF:=--with-cryptsetup
+else
+EXTRACONF:=--without-cryptsetup
+endif
+
+# install pam_mount.so in /lib/security; enable selinux install;
+# install DTD for XML configuration
+DEB_CONFIGURE_USER_FLAGS:=--libdir=/lib --with-selinux --with-dtd $(EXTRACONF)
+# the changelog
+DEB_DH_INSTALLCHANGELOGS_ARGS=doc/changelog.txt
+CFLAGS += -fstack-protector -D_FORTIFY_SOURCE=2 -Wformat -Wformat-security
+
+binary-post-install/libpam-mount::
+# install configuration
+	install -m 0644 config/pam_mount.conf.xml $(BASE)/etc/security
+# remove unused encfs 1.3 helper
+	rm -f $(BASE)/sbin/mount.encfs13
+# install pam-auth-update script
+	install -m 0644 debian/pam-auth-update $(BASE)/usr/share/pam-configs/libpam-mount
+# remove var/run directory as it gets created automatically when missing
+	rmdir $(BASE)/var/run/pam_mount
+	dh_lintian
+
+include /usr/share/cdbs/1/rules/debhelper.mk
+include /usr/share/cdbs/1/class/autotools.mk
+
+clean::
+# remove generated file
+	rm -f src/umount.crypt

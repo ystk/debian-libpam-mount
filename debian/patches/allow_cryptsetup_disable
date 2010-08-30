@@ -1,0 +1,13 @@
+Index: libpam-mount-2.5/configure
+===================================================================
+--- libpam-mount-2.5.orig/configure	2010-08-25 21:50:39.000000000 +0200
++++ libpam-mount-2.5/configure	2010-08-25 21:50:48.000000000 +0200
+@@ -11169,7 +11169,7 @@ else
+ fi
+ 
+ 
+-with_cryptsetup="yes";
++#with_cryptsetup="yes";
+ 
+ # Check whether --with-cryptsetup was given.
+ if test "${with_cryptsetup+set}" = set; then :

@@ -1,0 +1,12 @@
+doc/mount.crypt.8
+doc/mount.crypt_LUKS.8
+doc/mount.crypto_LUKS.8
+doc/pam_mount.8
+doc/pam_mount.conf.5
+doc/pmt-ehd.8
+doc/pmt-fd0ssh.1
+doc/pmvarrun.8
+doc/umount.crypt.8
+doc/umount.crypt_LUKS.8
+doc/umount.crypto_LUKS.8
+debian/pmt-ofl.1
