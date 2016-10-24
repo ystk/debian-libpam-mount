@@ -1,0 +1,89 @@
+.TH mount.crypt 8 "2011\-12\-15" "pam_mount" "pam_mount"
+.SH Name
+.PP
+mount.crypt - mount a dm\-crypt encrypted volume
+.SH Syntax
+.PP
+\fBmount.crypt\fP [\fB-nrv\fP] [\fB\-o\fP \fIoptions\fP]
+\fIdevice\fP \fIdirectory\fP
+.SH Options
+.TP
+\fB\-o\fP \fIoptions\fP
+Set further mount options. mount.crypt will take out its own options it
+recognizes and passes any remaining options on to the underlying mount
+program. See below for possible options.
+.TP
+\fB\-n\fP
+Do not update /etc/mtab. Note that this makes it impossible to unmount the
+volume by naming the container - you will have to pass the mountpoint to
+umount.crypt.
+.TP
+\fB\-r\fP
+Set up the loop device (if necessary) and crypto device in read-only mode.
+(The mount itself will necessarily also be read-only.) Note that doing a
+remount using `mount /mnt -o remount,rw` will \fBnot\fP make the mount
+readwrite. The crypto and loop devices will have to be disassociated first.
+.TP
+\fB\-v\fP
+Turn on debugging and be a bit more verbose.
+.SH Mount options
+.TP
+\fBallow_discard\fP
+Enables discard passthrough support. This option does not cause the filesystem
+to be mounted with discard enabled, but does allow fstrim to be manually run.
+.TP
+\fBcipher\fP
+The cryptsetup cipher used for the encrypted volume. This option is mandatory
+for PLAIN (non-LUKS) volumes. pmt-ehd(8) defaults to creating volumes with
+"aes\-cbc\-essiv:sha256" as a cipher.
+.TP
+\fBcrypto_name\fP
+Select the name for the crypto device (optional). This option is currently
+only usable with dm-crypt systems.
+.TP
+\fBfsck\fP
+Run fsck on the container before mounting it.
+.TP
+\fBfsk_cipher\fP
+The OpenSSL cipher used for the filesystem key. The special keyword "none" can
+be used to bypass decryption and pass the file contents directly to
+libcryptsetup.
+.TP
+\fBfsk_hash\fP
+The OpenSSL hash used for producing key and IV.
+.TP
+\fBfstype\fP
+The exact type of filesystem in the encrypted container. The default is to let
+the kernel autodetect.
+.TP
+\fBhash\fP
+The cryptsetup hash used for the encrypted volume. This defaults to no hashing,
+because pam_mount assumes EHD volumes with strong and simple fskey generation.
+.TP
+\fBkeyfile\fP
+The path to the key file. This option is mandatory for "normal" crypto volumes
+and should not be used for LUKS volumes.
+.TP
+\fBremount\fP
+Causes the filesystem to be remounted with new options. Note that mount.crypt
+cannot switch the underlying loop device (if applies) or the crypto device
+between read-only and read-write once it is created; only the actual filesystem
+mount can be changed, with limits. If the loop device is read-only, the crypto
+device will be read-only, and changing the mount to read-write is impossible.
+Similarly, going from rw to ro will only mark the mount read-only, but not the
+crypto or loop device, thus making it impossible to set the filesystem the
+crypto container is located on to read-only.
+.TP
+\fBro\fP
+Same as the \fB-r\fP option.
+.TP
+\fBverbose\fP
+Same as the \fB-v\fP option.
+.SH Obsolete mount options
+.PP
+This section is provided for reference.
+.TP
+\fBloop\fP
+This option used to set up a loop device, because cryptsetup(8) expects a block
+device. The option is ignored because mount.crypt can figure this out on its
+own.

@@ -1,0 +1,13 @@
+
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+libHX_LIBS=@libHX_LIBS@
+
+Name:		libcryptmount
+Description:	Library for mounting crypto images and handle key files
+Version:	@PACKAGE_VERSION@
+Cflags:		-I${includedir}
+Libs:		-L${libdir} -lcryptmount
+Libs.private:	@libHX_LIBS@

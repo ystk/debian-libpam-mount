@@ -1,0 +1,8 @@
+#!/bin/sh -ex
+
+if [ ! -e configure ]; then
+	./autogen.sh;
+fi;
+exec ./configure CFLAGS=-ggdb3 \
+	LDFLAGS="-Wl,-z -Wl,defs -Wl,-z -Wl,--as-needed" \
+	--with-rundir="$PWD/run" "$@";

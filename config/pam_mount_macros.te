@@ -1,0 +1,100 @@
+type pammount_var_run_t, file_type, sysadmfile, pidfile;
+typealias pammount_var_run_t alias var_run_pammount_t;
+
+type pam_mount_exec_t, file_type, sysadmfile, exec_type;
+type pam_mount_t, domain, privlog, fs_domain;
+
+define(`pam_mount_domain', `
+# may exec helper binaries:
+role $1_r types pam_mount_t;
+domain_auto_trans($2_t, pam_mount_exec_t, pam_mount_t)
+
+# FIXME: should have more fine-grained types
+# read /etc/pam_mount.conf.xml and ~/.pam_mount.conf.xml
+allow $2_t etc_runtime_t:file { getattr read };
+allow $2_t user_home_t:file { getattr read };
+
+# allow checking to see if a volume is already mounted in or at $HOME
+allow $2_t user_home_t:dir { search getattr };
+allow $2_t user_home_dir_t:dir { search getattr };
+
+# for lsof, etc: VIOLATES ASSERTION
+# can_exec($2_t, sbin_t)
+
+allow $2_t default_t:file { getattr read };
+
+# allow the proper execution of mount:
+role $1_r types mount_t;
+domain_auto_trans($2_t, mount_exec_t, mount_t)
+
+# allow the proper execution of losetup and fsck:
+role $1_r types fsadm_t;
+domain_auto_trans($2_t, fsadm_exec_t, fsadm_t)
+')
+
+pam_mount_domain(system, xdm)
+pam_mount_domain(user, user_su)
+pam_mount_domain(sysadm, sysadm_su)
+pam_mount_domain(system, local_login)
+pam_mount_domain(system, remote_login)
+
+# allow pam_mount_t (helper binaries) to manipulate /var/run/pam_mount:
+uses_shlib(pam_mount_t)
+read_locale(pam_mount_t)
+file_type_auto_trans(pam_mount_t, var_run_t, pammount_var_run_t, file)
+allow pam_mount_t pammount_var_run_t:dir rw_dir_perms;
+allow pam_mount_t pammount_var_run_t:file { create getattr };
+allow pam_mount_t var_run_t:dir { create getattr setattr add_name write };
+allow pam_mount_t var_run_t:file { create getattr setattr read write lock unlink };
+allow pam_mount_t pam_mount_t:unix_dgram_socket { create connect write };
+allow pam_mount_t pam_mount_t:capability { chown fsetid };
+
+# allow fsck to remove /etc/blkid.tab.old VIOLATES ASSETION
+# allow fsadm_t etc_t:file { unlink };
+
+# allow users to mount volumes within and as their home directory:
+allow mount_t user_home_t:dir { mounton getattr };
+allow mount_t user_home_dir_t:dir { getattr mounton };
+
+# allow users to losetup in home directory:
+allow fsadm_t user_home_t:dir { search };
+allow fsadm_t user_home_t:file { read write };
+
+# so that losetup may read password from stdin:
+allow fsadm_t user_devpts_t:chr_file { read write };
+
+# allow users to mount images in their home directory:
+allow mount_t user_home_t:file { getattr read write };
+
+# ============================= Should be move to elsewhere once util-linux ===
+# ============================= is patched: ===================================
+# allow reading of /proc/mounts link
+allow mount_t proc_t:lnk_file { read };
+
+# manipulate /dev/mapper/control:
+allow mount_t lvm_control_t:chr_file { read write ioctl };
+allow mount_t device_t:chr_file { read write ioctl };
+
+# create a device within /dev/mapper:
+allow mount_t device_t:dir { write add_name remove_name };
+allow mount_t device_t:blk_file { create unlink getattr read };
+
+# allow mount to read password from parent process:
+allow mount_t user_devpts_t:chr_file { read write getattr };
+
+# allow mount to create /dev/mapper device
+allow mount_t mount_t:capability { mknod };
+
+# allow mount to look up and set proper context of new /dev/mapper device:
+allow mount_t file_context_t:file { read getattr };
+allow mount_t security_t:dir { search };
+allow mount_t security_t:file { read write };
+allow mount_t security_t:security { check_context };
+allow mount_t device_t:blk_file { relabelfrom };
+allow mount_t fixed_disk_device_t:blk_file { relabelto unlink };
+
+# not sure yet why these are needed:
+allow mount_t selinux_config_t:file { read getattr };
+allow mount_t mount_t:dir { search };
+allow mount_t mount_t:file { getattr read };
+# =============================================================================

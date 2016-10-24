@@ -1,0 +1,55 @@
+
+Minimum required packages for building pam_mount from a tarball release:
+
+	* libHX 3.12.1 or up
+	* libmount 2.20 or up
+	* libpcre 7.0 or up
+	* libxml 2.6.x or up
+	* pkg-config 0.19 or up
+	* Linux-PAM 0.99.x or up
+	SUN-PAM (compiled-tested only with 5.11-Beta Build 85)
+	BSD PAM is untested and probably not working right now.
+
+Additional required packages for building from (Git) snapshot:
+
+	* autoconf 2.59 or up
+	* automake 1.10 or up
+	* libtool 1.5.22 or up (older ones might work)
+
+Then, optional packages for building:
+
+	* openssl 0.9.8 or up
+	* libcryptsetup 1.1.2 or up -- block-level encryption
+
+Suggested packages for runtime:
+
+	* hxtools
+		- fd0ssh: to support passing passwords to SSH
+		- ofl: to support kill-on-logout
+
+	local targets:
+	* encfs 1.4 or up -- file-level encryption
+
+	remote targets:
+	* sshfs -- SFTP-over-SSH
+	* ccgfs -- ccgfs-over-SSH (full operation support; mknod, acl, xattrs)
+	* cifs-mount -- for CIFS and SMB shares
+
+	configuration validation:
+	* xmllint (libxml2)
+
+Notes for configure:
+
+OpenSSL and/or libcryptsetup are optional, to build without them however
+you need to explicitly specify --without-crypto and/or
+--without-libcryptsetup, respectively.
+
+DTD installation usage:
+
+	Configure pam_mount with:
+		--with-dtd
+
+	To validate (assuming the installation prefix was /usr):
+		xmllint --nonet --noout --loaddtd --valid
+		--path /usr/share/xml/pam_mount/dtd/pam_mount.conf.xml.dtd
+		/etc/security/pam_mount.conf.xml

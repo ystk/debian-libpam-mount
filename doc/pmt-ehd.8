@@ -1,0 +1,74 @@
+.TH pmt\-ehd 8 "2011-Aug-05" "pam_mount" "pam_mount"
+.SH Name
+.PP
+pmt\-ehd - create an encrypted disk image
+.SH Syntax
+.PP
+\fBpmt-ehd\fP [\fB-DFx\fP]
+[\fB-c\fP \fIfscipher\fP]
+[\fB-h\fP \fIhash\fP]
+[\fB-k\fP \fIfscipher_keybits\fP]
+[\fB-t\fP \fIfstype\fP]
+\fB-f\fP \fIcontainer_path\fP
+\fB-s\fP \fIsize_in_mb\fP
+.SH Options
+.PP
+Mandatory options that are absent are inquired interactively, and pmt-ehd will
+exit if stdin is not a terminal.
+.TP
+\fB-D\fP
+Turn on debugging strings.
+.TP
+\fB-F\fP
+Force operation that would otherwise ask for interactive confirmation. Multiple
+\fB-F\fP can be specified to apply more force.
+.TP
+\fB-c\fP \fIcipher\fP
+The cipher to be used for the filesystem. This can take any value that
+cryptsetup(8) recognizes, usually in the form of "cipher-mode[-extras]".
+Recommended are \fBaes-cbc-essiv:sha256\fP (this is the default) or
+\fBaes-xts-essiv:sha256\fP.
+.TP
+\fB-f\fP \fIpath\fP
+Store the new disk image at \fIpath\fP. If the file already exists, pmt-ehd
+will prompt before overwriting unless -F is given. If \fIpath\fP refers to a
+symlink, pmt-ehd will act even more cautious.
+.TP
+\fB-h\fP \fIhash\fP
+Message digest/hash used for key derivation in the PBKDF2 stage. The default is
+\fBsha512\fP.
+.TP
+\fB-i\fP \fIcipher\fP
+(This option had been removed in pam_mount/pmt_ehd 2.11.)
+.TP
+\fB-k\fP \fIkeybits\fP
+The keysize for the cipher specified with -c. Some ciphers support multiple
+keysizes, AES for example is available with at least the keysizes 192 and 256.
+Defaults to \fB256\fP (to match aes-cbc-essiv). Note that XTS uses two keys,
+but drawn from the same key material, so aes-cbc-256 is equivalent to
+aes-xts-512, and aes-cbc-128 is to aes-xts-256.
+.TP
+\fB-p\fP \fIpath\fP
+(This option had been removed in pam_mount/pmt_ehd 2.11.)
+.TP
+\fB-s\fP \fIsize\fP
+The initial size of the encrypted filesystem, in megabytes. This option is
+ignored when the filesystem is created on a block device.
+.TP
+\fB-t\fP \fIfstype\fP
+Filesystem to use for the encrypted filesystem. Defaults to xfs.
+.TP
+\fB-u\fP \fIuser\fP
+Give the container and fskey files to \fIuser\fP (because the program is
+usually runs as root, and the files would otherwise retain root ownership).
+.TP
+\fB-x\fP
+Do not initialize the container with random bytes. This may impact secrecy.
+.SS Description
+.PP
+\fBpmt-ehd\fP can be used to create a new encrypted container, and replaces the
+previous mkehd script as well as any HOWTOs that explain how to do it manually.
+Without any arguments, pmt-ehd will interactively ask for all missing
+parameters. To create a container with a size of 256 MB, use:
+.PP
+pmt-ehd -f /home/user.cont -s 256

@@ -1,0 +1,16 @@
+
+o passwdehd needs work.
+
+o how can I determine target user name when root su's to another user
+or when I ssh using public key?
+
+o need progress feedback from fsck, especially for gdm.
+
+o Should -N go in pam_mount.conf like it is now?  Shall I put this in
+conf/pam_mount.conf?  How does hashing/not hashing effect scripts?
+
+o Get rid of FIXMEs.
+
+= OpenBSD =====================================================================
+
+o Test new openpam to ensure OpenBSD patches are integrated.

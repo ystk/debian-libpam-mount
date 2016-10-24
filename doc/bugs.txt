@@ -1,0 +1,127 @@
+
+Known Issues with other programs
+
+
+== cryptsetup — awkward input processing ==
+
+Some people create their crypto partition using a command like
+
+	openssl ... | cryptsetup create ...
+
+Without any extra arguments, input is processed as if it were
+interactive, that is, everything starting from the first newline is
+ignored. This is standard behavior for stdin. Other truncations to
+binary characters may happen.
+
+pam_mount's mount.crypt makes sure that libcryptsetup uses the entire
+key material, including newlines, NUL bytes or other characters.
+However, since you created your crypto volume with a truncated key
+that is different from the real one, mounting may fail unexpectedly.
+
+
+== cryptsetup — key truncation ==
+
+cryptsetup implicitly assumes -s 256, which either pads or truncates
+the key material after it has gone through cryptsetup's hashing (-h),
+if any. This means that
+
+	cryptsetup create -h sha512 ...
+
+will hash the input with SHA-512, then truncate it down to 256 bits,
+unless -s 512 was explicitly specified.
+
+pam_mount won't do this sort of key weakening when a key file is used.
+Remember that a key file is supposed to already contain the _final_ key
+used for the filesystem, i.e. no extra hashing. (This is why pam_mount
+also passes -h plain to cryptsetup by default.) Thus, pam_mount defaults
+to using the key file's length (when decrypted) as the cipher size.
+
+
+== shell — key expansion ==
+
+Some HOWTOs suggest manual key generation for encrypted volumes, however
+they fail to guard against shell semantics, such as:
+
+	KEY=$(head -c79 /dev/urandom)
+
+At least bash strips all \x00 bytes from the input. There might be worse
+behavior. Furthermore,
+
+	echo $KEY | openssl ...
+
+implicitly adds a newline into the stream, which is unwanted for
+key generation. Please use the pmt-ehd tool to create PLAIN-type
+encrypted volumes.
+
+
+== gksu & kdesu ==
+
+gksu interprets any output on stderr as an error. pam_mount writes
+debug output to stderr, so this combination will only work if debugging
+is disabled in pam_mount, or gksu gets fixed.
+
+
+== sshd — various ==
+
+The "UsePAM" configuration option is required to be enabled to make
+sshd go through the PAM stacks.
+
+When "PrivilegeSeparation" is enabled in OpenSSH versions before 4.9,
+ssh will not run correctly through the PAM stacks. In 4.9 and later,
+this is fixed.
+
+When public key authentication is used, the PAM auth stage is entirely
+skipped. The same goes for Challenge Response Authentication.
+
+So pam_mount would normally ask for a password in the session stage,
+but in any OpenSSH to date, PAM modules do not seem to be able to ask
+for a password in the session stage, "conversation" always fails:
+https://bugzilla.mindrot.org/show_bug.cgi?id=926#c35
+https://bugzilla.mindrot.org/show_bug.cgi?id=688
+
+"UseLogin yes" may be used to enable pam_mount -- irrespective of
+public key authentification, privilege separation or UsePAM=no. sshd
+itself will not do anything useful w.r.t. pam_mount, but it will call
+/bin/login which will then run through the PAM session stage, where
+pam_mount can ask your for a password. Read the sshd documentation
+about possible pitfalls involved using UseLogin.
+
+
+== su, probably others — privilege drop ==
+
+I sometimes get reports about unmount failing because of insufficient
+privileges. Some programs and/or distributions and/or pam
+configurations seem to drop the root privileges after successful
+authentification. This goes counter to pam_mount which needs these
+privileges for umount. (May not apply for FUSE mounts.)
+
+Known constellations include
+
+	* su from coreutils, on some distros
+	* GDM on Ubuntu
+
+
+== sudo ==
+
+sudo has an internal bug (def_prompt is NULL) that leads to a crash
+when a PAM module tries to invoke the conversation function.
+
+Seen with at least 1.6.9p17.
+Reference: http://bugs.debian.org/492333
+
+
+== truecrypt ==
+
+The scriptable interface of Truecrypt 5 and upwards is broken and
+cannot be used by pam_mount.
+
+
+== vsftpd — not using PAM ==
+
+vsftpd does not run through the PAM session code, hence will never
+call pam_mount's mounting functions.
+It also appears to drop privileges so that there would be a
+unmounting problems.
+
+
+# right-margin: 72

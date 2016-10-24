@@ -1,0 +1,27 @@
+LIBCRYPTMOUNT_2.13 {
+global:
+	cryptmount_init;
+	cryptmount_exit;
+	ehd_cipherdigest_security;
+	ehd_dbg;
+	ehd_err;
+	ehd_get_password;
+	ehd_is_luks;
+	ehd_kdreq_free;
+	ehd_kdreq_new;
+	ehd_kdreq_set;
+	ehd_keydec_run;
+	ehd_keydec_strerror;
+	ehd_load;
+	ehd_logctl;
+	ehd_loop_setup;
+	ehd_loop_release;
+	ehd_mtinfo_free;
+	ehd_mtinfo_get;
+	ehd_mtreq_new;
+	ehd_mtreq_set;
+	ehd_mtreq_free;
+	ehd_unload;
+local:
+	*;
+};

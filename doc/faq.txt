@@ -1,0 +1,229 @@
+=======================================================================
+
+Q.  I want to ask for help.  What information should I provide?
+
+A.  You need to provide us the following:
+
+    * A full log of a failed session with debugging turned on in
+      pam_mount.conf.xml
+    * The version of pam_mount that you are using
+    * /etc/pam.d/* as relevant
+    * pam_mount.conf.xml as relevant, preferably completely
+
+=======================================================================
+
+Q.  Is there a pam_mount mailing list?
+
+A.  Yes, http://sourceforge.net/mail/?group_id=41452
+
+=======================================================================
+
+Q.  What does the following error mean: pam_mount: error trying to
+    retrieve authtok from session code?
+
+A.  This often means that the pam_mount module was not executed as an
+    auth type module. This error is usually due to a misconfigured auth
+    PAM stack (/etc/pam.d/<service>). For example, if you use an auth
+    PAM module configured with the control flag of sufficient, then
+    pam_mount needs to be executed before it.
+
+=======================================================================
+
+Q.  What does the following error mean: Error reading password from file
+    descriptor 0: empty password?"
+
+A.  This often means that pam_mount was not run as an auth type module,
+    so it did not receive a password (file descriptor 0 is stdin and
+    that is how pam_mount transmits passwords to mount). A module
+    above pam_mount in the PAM configuration stack that is configured
+    as sufficient can cause this. As the README file states, do this:
+
+        auth    required    pam_mount.so
+        auth    sufficient  pam_ldap.so use_first_pass
+
+    NOT THIS:
+
+        auth sufficient pam_ldap.so
+        auth required   pam_mount.so
+
+=======================================================================
+
+Q.  Why am I prompted for a password twice after installing pam_mount?
+
+A.  Like most PAM modules, pam_mount prompts the user for a password.
+    When used with another auth type module, such as pam_unix2, this
+    may result in both modules prompting for a password. In order to
+    get a more desirable behavior, instruct the second module to use
+    the first password entered by using the use_first_pass option.
+    The exact option name for other modules may be different from
+    "use_first_pass", so be sure to check their documentation.
+
+=======================================================================
+
+Q.  Why am I having trouble logging in with KDE while using an SMB
+    share as my home directory?
+
+A.  SMB (and some other non-UNIX-native network filesystems) do not
+    support special file types needed by KDE. Either mount your SMB
+    share as a subdirectory of your home directory or instruct KDE to
+    use /tmp for its special files.
+
+=======================================================================
+
+Q.  Why are my volumes not being unmounted when I log out?
+
+A.  Often this is because processes remaining after logging out are
+    holding open files in your home directory. For example, some versions
+    of gconf do this. The best way to figure out what programs are guilty
+    is to enable debugging in your pam_mount.conf.xml, and watch for
+    ofl's output in your logs.
+
+=======================================================================
+
+Q.  Why are my smbmounts hanging when using Red Hat Linux 9?
+
+A.  See https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=103200.
+
+    Try creating /sbin/mount.smbfs_no_nptl with this content:
+
+        #!/bin/sh
+        export LD_ASSUME_KERNEL=2.4.1
+        exec smbmount "$@"
+
+    Then configure pam_mount with the following in pam_mount.conf.xml:
+
+        <smbmount>/bin/mount -t smbfs_no_nptl</smbmount>
+
+=======================================================================
+
+Q.  Will pam_mount work with my ftpd?
+
+A.  I do not know. I know that vsftpd works fine with pam_mount. You
+    need to specify "session_support=YES" in your vsftpd.conf. You also
+    need to be careful about pam_mount sending debugging information
+    down the FTP connection.
+
+=======================================================================
+
+Q.  Why does pam_mount not work right with OpenSSH?
+
+A.  As of version 3.3, sshd has a feature called privilege separation
+    that is incompatible with PAM modules needing root privileges. In
+    addition, OpenSSH does not use PAM by default. OpenSSH before 4.9
+    does not properly deal with PAM. See bugs.txt.
+
+    [...]
+
+    Finally, Darren Tucker has explained:
+
+        OK, here is what is happening: sshd forks when doing
+        challenge-response authentication, and the pam_authenticate
+        call happens in the child (the authentication "thread",
+        although it is normally a process).
+
+        This, BTW, is because pam_authenticate blocks while waiting for
+        responses from the conversation function. In sshd this blocking
+        means that the dispatch loop (which is needed to communicate
+        with the user) is not running until pam_authenticate completes,
+        but it cannot complete until because the dispatch loop is not
+        running. Another process is used to prevent this deadlock.
+
+        It would appear that pam_mount relies on either module-private
+        data set during the pam_authenticate or the PAM_AUTHTOK item,
+        both of which are lost when the the authentication "thread"
+        exits. pam_mount goes looking for them during session
+        initialization in order to authenticate to the SMB server,
+        cannot get them and fails.
+
+        Since you have OpenSSH 3.9p1, you can set
+        "ChallengeResponseAuthentication no" and
+        "PasswordAuthentication yes" in sshd_config and it ought to
+        work (with or without privsep).
+
+        If you absolutely *must* have challenge-response authentication
+        then you can build OpenSSH with the pthread hack, but this it
+        not recommended.
+
+        If you have trouble with it not dismounting then you will need
+        to apply the patch in this bug (this one only works with
+        privsep=no, and I cannot see a good way to fix this for the
+        general case): http://bugzilla.mindrot.org/show_bug.cgi?id=926
+
+=======================================================================
+
+Q.  Why are my volumes not being unmounted by pam_mount?
+
+A.  Some stupid programs keep files open that make it impossible to
+    umount. There is a <logout> directive in the configuration file
+    to kill programs when needed.
+
+=======================================================================
+
+Q.  What is with the auth requirement for pam_mount?  Should not this be
+    a session module only?
+
+A.  PAM discards the password after all modules from the "auth" stage
+    have run, giving no possibility to retrieve it for "session" stage
+    modules. In case pam_mount does not have the password by the time
+    the session stage is executed, it will try to prompt for it.
+
+=======================================================================
+
+Q.  I want to use a FUSE share as my home directory but GNOME/KDE do
+    not seem to like this (error messages, lockups). Why?
+
+A.  Big desktop environments as the aforementioned make use of locking,
+    symbolic links, and potentially local sockets (UNIX sockets).
+    If the filesystem and/or the remote server do not support these,
+    error messages or lockups may ensue.
+
+=======================================================================
+
+Q.  I want to use an NCP share as my home directory but X does not seem
+    to like this. Why?
+
+A.  The X authentication utility xauth uses file system facilities not
+    supported by the Linux ncpfs driver. In order to work around this,
+    try adding something like the following to your shell's
+    configuration file:
+
+        export XAUTHORITY=/tmp/.Xauthority
+        export ICEAUTHORITY=/tmp/.ICEauthority
+
+    If you use gdm then you may want to modify gdm.conf's UserAuthDir
+    instead of setting XAUTHORITY.
+
+    If you also wish to allow OpenSSH to tunnel X out of the same
+    computer, then ensure /etc/ssh/sshd_config is configured with
+    PermitUserEnvironment enabled and add the following to
+    ~/.ssh/environment:
+
+        XAUTHORITY=/tmp/.Xauthority
+
+=======================================================================
+
+Q.  Can I use pam_mount on an SELinux-enabled system?
+
+A.  I would not recommend it right now on a production system. However,
+    until pam_mount nicely integrates, you can take a look at the
+    included pam_mount_macros.te.
+
+    Any filesystem that is mounted on $HOME must have the context of
+    its root directory set to user_home_dir_t.
+
+    Encrypted filesystems keys should generally have the context of
+    user_home_t.
+
+    If you wish to mount user-owned loopback filesystem images then
+    these images must have their file context set to user_home_t.
+
+    Because it changes the context of child processes of things like
+    login and su, pam_selinux must be invoked after pam_mount on login.
+    Because this effect on contexts must be reversed before pam_mount,
+    pam_selinux must be invoked before pam_mount on logout:
+
+        session required /lib/security/$ISA/pam_selinux.so close
+        session required /lib/security/$ISA/pam_mount.so
+        session required /lib/security/$ISA/pam_selinux.so open multiple
+
+=======================================================================
