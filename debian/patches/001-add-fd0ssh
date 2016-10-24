@@ -1,0 +1,277 @@
+Index: libpam-mount-2.14~git2+ad53f3559/COPYING
+===================================================================
+--- libpam-mount-2.14~git2+ad53f3559.orig/COPYING	2012-07-30 17:53:51.000000000 +0200
++++ libpam-mount-2.14~git2+ad53f3559/COPYING	2012-08-09 11:59:03.213846161 +0200
+@@ -17,6 +17,11 @@ and/or modified under the terms of the G
+ published by the Free Software Foundation; either version 2 of the
+ License, or (at your option) any later version.
+ 
++The program "pmt-fd0ssh" and its source (from the "hxtools" software
++package) are free software; you can redistribute them and/or modify
++it under the terms of the GNU General Public License as published by
++the Free Software Foundation; either version 2 or 3 of the License.
++
+ The license texts are available in the file "LICENSE.LGPL2" and
+ "LICENSE.LGPL3". The GNU GPL as mentioned in the LGPL3 text is
+ available in the file "LICENSE.GPL3".
+Index: libpam-mount-2.14~git2+ad53f3559/doc/Makefile.am
+===================================================================
+--- libpam-mount-2.14~git2+ad53f3559.orig/doc/Makefile.am	2012-07-30 17:53:51.000000000 +0200
++++ libpam-mount-2.14~git2+ad53f3559/doc/Makefile.am	2012-08-09 11:54:45.763541070 +0200
+@@ -3,7 +3,7 @@
+ man_MANS = pam_mount.8 pam_mount.conf.5
+ dist_man_MANS = mount.crypt.8 mount.crypt_LUKS.8 mount.crypto_LUKS.8 \
+ 		pmvarrun.8 pmt-ehd.8 \
+-		umount.crypt.8 umount.crypt_LUKS.8 \
++		pmt-fd0ssh.1 umount.crypt.8 umount.crypt_LUKS.8 \
+ 		umount.crypto_LUKS.8
+ EXTRA_DIST = bugs.txt changelog.txt faq.txt install.txt options.txt todo.txt \
+ 	pam_mount.8.in pam_mount.conf.5.in
+Index: libpam-mount-2.14~git2+ad53f3559/doc/pmt-fd0ssh.1
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ libpam-mount-2.14~git2+ad53f3559/doc/pmt-fd0ssh.1	2012-08-09 11:54:45.763541070 +0200
+@@ -0,0 +1,24 @@
++.TH pmt\-fd0ssh 1 "2008\-04\-06" "pam_mount" "pam_mount"
++.SH Name
++.PP
++pmt\-fd0ssh - pipe for password\-over\-stdin support to ssh
++.SH Syntax
++.PP
++\fBpmt\-fd0ssh\fP \fImount_command\fP
++.SH Description
++.PP
++This is a wrapper for ssh which reads the password from stdin
++and sets things up so that ssh will recall the wrapper to get the password,
++which will be read from the parent process using a pipe.
++.PP
++It is used by pam_mount(8) to mount SSH\-based filesystems, such as
++ccgfs and sshfs.
++.SH "See also"
++.PP
++This program is imported from hxtools, a tool suite by Jan Engelhardt.
++Idea by John S. Skogtvedt, http://www.debian\-administration.org/articles/587
++.SH Author
++.PP
++This manpage was originally written by Bastian Kleineidam
++<calvin@debian.org> for the Debian distribution of libpam\-mount but
++may be used by others.
+Index: libpam-mount-2.14~git2+ad53f3559/src/fd0ssh.c
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ libpam-mount-2.14~git2+ad53f3559/src/fd0ssh.c	2012-08-09 11:54:45.763541070 +0200
+@@ -0,0 +1,193 @@
++/*
++ *	fd0ssh -
++ *	hand stdin (fd 0) passwords to ssh via ssh-askpass mechanism
++ *
++ *	Copyright © CC Computer Consultants GmbH, 2008
++ *
++ *	This program is free software; you can redistribute it and/or
++ *	modify it under the terms of the GNU Lesser General Public
++ *	License as published by the Free Software Foundation; either
++ *	version 2.1 or 3 of the License.
++ *
++ *	(Program imported from the hxtools program suite.)
++ */
++#include <sys/ioctl.h>
++#include <sys/stat.h>
++#ifdef __sun__
++#	include <sys/termios.h>
++#endif
++#include <sys/types.h>
++#include <errno.h>
++#include <fcntl.h>
++#include <stdbool.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <string.h>
++#include <unistd.h>
++
++static const char zerossh_exchange_fd[] = "7";
++
++static void zerossh_detach_tty(void)
++{
++	int fd;
++
++	fd = open("/dev/tty", O_RDWR);
++	if (fd < 0 && errno != ENXIO) {
++		perror("open /dev/tty");
++		abort();
++	}
++	ioctl(fd, TIOCNOTTY);
++	close(fd);
++}
++
++static int zerossh_pipe_writer(const int *pipe_fd, const char *password)
++{
++	unsigned int pw_len = strlen(password);
++
++	close(pipe_fd[0]);
++	while (write(pipe_fd[1], password, pw_len) == pw_len)
++		;
++
++	return EXIT_SUCCESS;
++}
++
++static int zerossh_exec(const int *pipe_fd, const char **argv)
++{
++	if (dup2(pipe_fd[0], strtol(zerossh_exchange_fd, NULL, 0)) < 0) {
++		perror("dup2");
++		abort();
++	}
++	close(pipe_fd[0]);
++	close(pipe_fd[1]);
++	zerossh_detach_tty();
++
++	if (isatty(4)) {
++		dup2(4, STDIN_FILENO);
++		close(4);
++	}
++
++	return execvp(*argv, (char *const *)argv);
++}
++
++static int zerossh_setup(int argc, const char **argv)
++{
++	char password[256], *p;
++	int pipe_fd[2], fd;
++	pid_t pid;
++
++	setenv("DISPLAY", "-:0", false);
++	setenv("SSH_ASKPASS", *argv, true);
++	setenv("SSH_ASKPASS_FD", zerossh_exchange_fd, true);
++
++	if (fgets(password, sizeof(password)-1, stdin) == NULL)
++		*password = '\0';
++	p = password + strlen(password);
++	*p++ = '\n';
++	*p++ = '\0';
++	fclose(stdin);
++
++	/*
++	 * STDIN_FILENO and STDERR_FILENO must be open, otherwise fuse/ssh
++	 * and -- for some reason, the pipe writer -- feels very upset.
++	 */
++	fd = open("/dev/null", O_RDONLY);
++	if (fd < 0) {
++		perror("open /dev/null");
++		abort();
++	}
++	if (fd != STDIN_FILENO) {
++		if (dup2(fd, STDIN_FILENO) < 0) {
++			perror("dup");
++			abort();
++		}
++		close(fd);
++	}
++	if (dup2(fd, STDERR_FILENO) < 0) {
++		perror("dup");
++		abort();
++	}
++
++	if (pipe(pipe_fd) < 0) {
++		perror("pipe");
++		abort();
++	}
++
++	/*
++	 * Making the writer a subprocess makes for a very compact memory
++	 * usage, allows to use no special signal setup, and even both
++	 * interactive and non-interactive work as expected, that is, if
++	 * mount.fuse detaches, so does the pipe writer with it.
++	 */
++	if ((pid = fork()) < 0) {
++		perror("fork");
++		abort();
++	} else if (pid == 0) {
++		return zerossh_pipe_writer(pipe_fd, password);
++	}
++
++	return zerossh_exec(pipe_fd, &argv[1]);
++}
++
++/**
++ * zerossh_askpass - askpass part of the program
++ * @in_fd:	inherited pipe (from zerossh_exec) to read password from
++ * @out_fd:	pipe to the ssh parent process wanting our password
++ */
++static int zerossh_askpass(int in_fd, int out_fd)
++{
++	ssize_t ret __attribute__((unused));
++	char *buf, *p;
++
++	buf = malloc(4096);
++	if (buf == NULL) {
++		perror("malloc");
++		abort();
++	}
++
++	ret = read(in_fd, buf, 4096);
++	if (ret < 0) {
++		perror("read");
++		abort();
++	}
++
++	close(in_fd);
++	p = memchr(buf, '\n', ret);
++	/* ignore return values of write() */
++	if (p == NULL)
++		ret = write(out_fd, buf, ret);
++	else
++		ret = write(out_fd, buf, p - buf + 1);
++
++	close(out_fd);
++	return EXIT_SUCCESS;
++}
++
++int main(int argc, const char **argv)
++{
++	const char *s;
++
++	if (**argv != '/' && strchr(argv[0], '/') != NULL)
++		/*
++		 * We either need an absolute path or something that is
++		 * reachable through $PATH -- warn on everything else.
++		 */
++		fprintf(stderr, "You used a relative path -- ssh might not "
++		        "locate the fd0ssh binary.\n");
++
++	s = getenv("SSH_ASKPASS_FD");
++	if (s != NULL)
++		return zerossh_askpass(strtoul(s, NULL, 0), STDOUT_FILENO);
++
++	if (argc == 1) {
++		fprintf(stderr,
++			"This program is not run from an interactive prompt, "
++			"but rather from a script which utilizes it.\n"
++			"Semantic call syntax:\n"
++			"\t""echo $password | %s <program> [options...]\n",
++		        *argv);
++		return EXIT_FAILURE;
++	}
++
++	close(STDERR_FILENO);
++	return zerossh_setup(argc, argv);
++}
+Index: libpam-mount-2.14~git2+ad53f3559/src/Makefile.am
+===================================================================
+--- libpam-mount-2.14~git2+ad53f3559.orig/src/Makefile.am	2012-07-30 17:53:51.000000000 +0200
++++ libpam-mount-2.14~git2+ad53f3559/src/Makefile.am	2012-08-09 11:59:03.213846161 +0200
+@@ -7,6 +7,7 @@ AM_CFLAGS = ${regular_CFLAGS} ${GCC_FVIS
+ 
+ moduledir		= @PAM_MODDIR@
+ module_LTLIBRARIES	= pam_mount.la
++bin_PROGRAMS		= pmt-fd0ssh
+ sbin_PROGRAMS		= pmvarrun
+ if HAVE_LIBCRYPTSETUP
+ sbin_PROGRAMS		+= pmt-ehd
+@@ -75,6 +76,8 @@ mount_crypt_LDADD	= libcryptmount.la lib
+ pmt_ehd_SOURCES		= ehd.c bdev.c misc.c spawn.c
+ pmt_ehd_LDADD		= libcryptmount.la ${libHX_LIBS} ${libcryptsetup_LIBS}
+ 
++pmt_fd0ssh_SOURCES	= fd0ssh.c
++
+ #
+ # runtime helpers
+ #

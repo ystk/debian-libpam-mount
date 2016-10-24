@@ -1,0 +1,13 @@
+Index: libpam-mount-2.14~zgit2+aa0d624e/src/Makefile.am
+===================================================================
+--- libpam-mount-2.14~zgit2+aa0d624e.orig/src/Makefile.am	2013-06-25 21:42:50.159694738 +0200
++++ libpam-mount-2.14~zgit2+aa0d624e/src/Makefile.am	2013-06-25 21:44:00.806435651 +0200
+@@ -71,7 +71,7 @@ autoloop_LDADD		= libcryptmount.la ${lib
+ # mount helpers
+ #
+ mount_crypt_SOURCES	= mtcrypt.c spawn.c
+-mount_crypt_LDADD	= libcryptmount.la libpmt_mtab.la ${libHX_LIBS}
++mount_crypt_LDADD	= libcryptmount.la libpmt_mtab.la ${libHX_LIBS} ${libcrypto_LIBS}
+ 
+ pmt_ehd_SOURCES		= ehd.c bdev.c misc.c spawn.c
+ pmt_ehd_LDADD		= libcryptmount.la ${libHX_LIBS} ${libcryptsetup_LIBS}

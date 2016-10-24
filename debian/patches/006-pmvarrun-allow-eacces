@@ -1,0 +1,15 @@
+Do not complain if pmvarrun had no permission to unlink.
+
+Index: libpam-mount-2.14~git2+ad53f3559/src/pmvarrun.c
+===================================================================
+--- libpam-mount-2.14~git2+ad53f3559.orig/src/pmvarrun.c	2012-08-09 11:54:52.211398439 +0200
++++ libpam-mount-2.14~git2+ad53f3559/src/pmvarrun.c	2012-08-09 11:54:54.643344645 +0200
+@@ -455,7 +455,7 @@ static int write_count(int fd, long nv,
+ 	if (nv <= 0) {
+ 		if (unlink(filename) >= 0)
+ 			return true;
+-		if (errno != EPERM)
++		if (errno != EPERM && errno != EACCES)
+ 			l0g("could not unlink %s: %s\n", filename, strerror(errno));
+ 		/*
+ 		 * Fallback to just blanking the file. This can happen when

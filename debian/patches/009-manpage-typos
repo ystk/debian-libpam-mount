@@ -1,0 +1,80 @@
+Index: libpam-mount-2.14/doc/pam_mount.8.in
+===================================================================
+--- libpam-mount-2.14.orig/doc/pam_mount.8.in	2013-08-27 12:16:34.000000000 +0200
++++ libpam-mount-2.14/doc/pam_mount.8.in	2013-08-31 17:07:01.823373229 +0200
+@@ -112,7 +112,7 @@ auth optional pam_mount.so
+ .PP
+ It may seem odd, but the first three lines will make it so that at least one of
+ pam_unix2 or pam_ldap has to succeed. As you can see, pam_mount will be run
+-\fBafter\fR successful authentification with these subsystems.
++\fBafter\fR successful authentication with these subsystems.
+ .SH Encrypted disks
+ .PP
+ pam_mount supports a few types of crypto. The most common are encfs, dm\-crypt
+Index: libpam-mount-2.14/doc/pam_mount.conf.5.in
+===================================================================
+--- libpam-mount-2.14.orig/doc/pam_mount.conf.5.in	2013-08-27 12:16:34.000000000 +0200
++++ libpam-mount-2.14/doc/pam_mount.conf.5.in	2013-08-31 17:07:01.823373229 +0200
+@@ -68,7 +68,7 @@ may fail if the filesystem kernel module
+ will check /proc/partitions.
+ .IP ""
+ The fstypes \fBcifs\fP, \fBsmbfs\fP, \fBncpfs\fP, \fBfuse\fP,
+-\fBnfs\fP and \fBnfs\fP are overriden by pam_mount and we run the respective
++\fBnfs\fP and \fBnfs\fP are overridden by pam_mount and we run the respective
+ helper programs directly instead of invoking \fBmount\fP(8) with the basic
+ default set of arguments which are often insufficient for networked
+ filesystems. See this manpage's section "Examples" below for more details.
+@@ -183,18 +183,18 @@ and then mounting further volumes from l
+ .TP
+ \fB<mntoptions allow="\fP\fIoptions,...\fP\fB" />\fP
+ The <mntoptions> elements determine which options may be specified in <volumes>
+-in per-user configuration files (see <luserconf>). It does not apply to the
+-master file. Specifying <mntoptions> is forbidden and ignored in per-user
++in per\-user configuration files (see <luserconf>). It does not apply to the
++master file. Specifying <mntoptions> is forbidden and ignored in per\-user
+ configs. The default allowed list consists of "\fInosuid,nodev\fP", and this
+ default is cleared when the first allow="..." attribute is seen by the config
+ parser. All further allow="..." are additive, though.
+ .TP
+ \fB<mntoptions deny="\fP\fIoptions,...\fP\fB" />\fP
+-Any options listed in deny may not appear in the option list of per-user
++Any options listed in deny may not appear in the option list of per\-user
+ mounts. The default deny list is empty.
+ .TP
+ \fB<mntoptions require="\fP\fIoptions,...\fP\fB" />\fP
+-All options listed in require must appear in the option list of per-user
++All options listed in require must appear in the option list of per\-user
+ mounts. The default require list consists of "\fInosuid,nodev\fP", and like
+ allow="", is cleared when first encountered by the parser, and is otherwise
+ additive.
+@@ -223,10 +223,10 @@ logging in.
+ fd0ssh is a hack around OpenSSH that essentially makes it read passwords from
+ stdin even though OpenSSH normally does not do that.
+ .TP
+-\fB<fsck>\fP\fIfsck -p %(FSCKTARGET)\fP\fB</fsck>\fP
++\fB<fsck>\fP\fIfsck \-p %(FSCKTARGET)\fP\fB</fsck>\fP
+ Local volumes will be checked before mounting if this program is set.
+ .TP
+-\fB<ofl>\fP\fIofl -k%(SIGNAL) %(MNTPT)\fP\fB</ofl>\fP
++\fB<ofl>\fP\fIofl \-k%(SIGNAL) %(MNTPT)\fP\fB</ofl>\fP
+ The Open File Lister is used to identify processes using files within the given
+ subdirectory, and optionally send a signal to those processes.
+ .TP
+@@ -386,7 +386,7 @@ example):
+ .PP
+ <volume user="test" fstype="tmpfs" mountpoint="/home/test"
+ options="size=10M,uid=%(USER),mode=0700" />
+-.SS dm-crypt volumes
++.SS dm\-crypt volumes
+ .PP
+ Crypt mounts require a kernel with CONFIG_BLK_DEV_DM and CONFIG_DM_CRYPT
+ enabled, as well as all the ciphers that are going to be used, e.g.
+@@ -403,7 +403,7 @@ cipher="aes\-cbc\-essiv:sha256" />
+ .PP
+ cryptoloop is not explicitly supported by pam_mount. Citing the Linux kernel
+ config help text: "WARNING: This device [cryptoloop] is not safe for
+-journal[l]ed filesystems[...]. Please use the Device Mapper [dm-crypt] module
++journal[l]ed filesystems[...]. Please use the Device Mapper [dm\-crypt] module
+ instead."
+ .SS OpenBSD encrypted home
+ OpenBSD encrypted home directory example:

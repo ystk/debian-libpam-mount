@@ -1,0 +1,35 @@
+Author: Till Maas <opensource@till.name>
+Date:   Wed Nov 26 20:59:52 2014 +0100
+Subject: pam_mount: remove unsupported -p0 mount option
+    
+The -p0 mount options was removed in util-linux 2.23.
+
+Bug-Debian: https://bugs.debian.org/764451
+Origin: http://sourceforge.net/p/pam-mount/pam-mount/ci/ca802908d22771e7fff8ffd8051ec21f7b0231eb/
+Last-Update: 2014-12-23
+Index: libpam-mount-2.14/doc/pam_mount.conf.5.in
+===================================================================
+--- libpam-mount-2.14.orig/doc/pam_mount.conf.5.in
++++ libpam-mount-2.14/doc/pam_mount.conf.5.in
+@@ -240,7 +240,7 @@ specify either absolute paths, or relati
+ searched. Since login programs have differing default PATHs, pam_mount has its
+ own path definition (see above).
+ .TP
+-\fB<lclmount>\fP\fImount \-p0 \-t %(FSTYPE) ...\fP\fB</lclmount>\fP
++\fB<lclmount>\fP\fImount \-t %(FSTYPE) ...\fP\fB</lclmount>\fP
+ The regular mount program.
+ .TP
+ \fB<umount>\fP\fIumount %(MNTPT)\fP\fB</umount>\fP
+Index: libpam-mount-2.14/src/rdconf1.c
+===================================================================
+--- libpam-mount-2.14.orig/src/rdconf1.c
++++ libpam-mount-2.14/src/rdconf1.c
+@@ -1431,7 +1431,7 @@ static const struct pmt_command default_
+ 	 */
+ 	{CMD_NFSMOUNT,    "nfs",   {"mount", "%(if %(OPTIONS),-o%(OPTIONS))", "-t%(FSTYPE)", "%(COMBOPATH)", "%(MNTPT)", NULL}},
+ 	{CMD_NFSMOUNT,    "nfs4"},
+-	{CMD_LCLMOUNT,    NULL,    {"mount", "-p0", "%(if %(OPTIONS),-o%(OPTIONS))", "-t%(FSTYPE)", "%(VOLUME)", "%(MNTPT)", NULL}},
++	{CMD_LCLMOUNT,    NULL,    {"mount", "%(if %(OPTIONS),-o%(OPTIONS))", "-t%(FSTYPE)", "%(VOLUME)", "%(MNTPT)", NULL}},
+ 	{CMD_CRYPTMOUNT,  "crypt", {"mount", "-t", "crypt", "%(if %(CIPHER),-ocipher=%(CIPHER))", "%(if %(FSKEYCIPHER),-ofsk_cipher=%(FSKEYCIPHER))", "%(if %(FSKEYHASH),-ofsk_hash=%(FSKEYHASH))", "%(if %(FSKEYPATH),-okeyfile=%(FSKEYPATH))", "%(if %(OPTIONS),-o%(OPTIONS))", "%(VOLUME)", "%(MNTPT)", NULL}},
+ 	{CMD_CRYPTMOUNT,  "crypt_LUKS"},
+ 	{CMD_CRYPTMOUNT,  "crypto_LUKS"},

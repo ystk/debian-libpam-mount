@@ -1,0 +1,2 @@
+# libcryptmount is an internal library
+libpam-mount: package-name-doesnt-match-sonames

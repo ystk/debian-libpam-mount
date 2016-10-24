@@ -1,0 +1,72 @@
+Installation on a Debian system
+===============================
+
+Edit the global configuration file /etc/security/pam_mount.conf.xml
+and add the volumes you want to mount upon login.
+If you enable the "luserconf" entry, every user can specify their
+own mounts in $HOME/.pam_mount.conf.xml.
+Note that user-specified volumes are mounted under the logged in user,
+not as root.
+
+See the pam_mount(8) and pam_mount.conf(5) man pages for more information.
+
+All changes to the file /etc/security/pam_mount.conf.xml
+take effect on the next login, so the next time a login shell is started,
+any new configured volumes will be read and mounted.
+
+If xmllint is installed, the configuration file can be validated with
+the following command:
+	xmllint --nonet --noout --loaddtd --valid
+	--path /usr/share/xml/pam_mount/dtd/pam_mount.conf.xml.dtd
+	/etc/security/pam_mount.conf.xml
+
+
+Configuration of PAM applications
+==================================
+
+This package uses pam-auth-update(8) to configure itself for all PAM
+applications. See the pam-auth-update(8) manpage for more info.
+
+
+Required packages for specific mount types
+==========================================
+All the packages below are suggested, since you do
+not need all of them to successfully use libpam-mount.
+
+Mount type			Required packages
+-------------------------------------------------
+Samba (cifs)			cifs-utils
+NetWare (ncpfs)			ncpfs
+LUKS or Dm-crypt (crypt)	cryptsetup, openssl, psmisc, fuser
+cryptoloop			openssl, cryptoloop-source (for 2.4 kernels)
+Fuse (fuser)			fuse, sshfs
+Truecrypt (truecrypt)		no official package available
+WebDAV (davfs)			davfs2
+XFS (xfs)			xfsprogs
+
+All filesystems also require the appropriate kernel support.
+See /proc/filesystems for a list of supported filesystems of the
+current kernel.
+
+
+Notes and bugs
+--------------
+- If you use SSH, you have to adjust /etc/ssh/sshd_config like this:
+
+  UsePAM yes
+  UsePrivilegeSeparation no
+  ChallengeResponseAuthentication no
+  PasswordAuthentication yes
+
+- Does not work properly with most (all?) ssh implementations
+  + openssh-server and the old ssh-krb5 mount ok, but do not unmount
+    see bug:
+    http://bugs.debian.org/372680
+  + lsh-server does not work at all; it does not use PAM
+
+- Only works with gksu when debugging is disabled. Be sure to set
+  "debug 0" in /etc/security/pam_mount.conf.xml if you use gksu.
+
+Some PAM modules require a mounted home directory (eg.
+pam_gnome_keyring used in gdm). These modules have to be moved
+after the common-pammount include if home directories are mounted.

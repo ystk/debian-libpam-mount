@@ -1,0 +1,142 @@
+Index: libpam-mount-2.14/src/pmvarrun.c
+===================================================================
+--- libpam-mount-2.14.orig/src/pmvarrun.c
++++ libpam-mount-2.14/src/pmvarrun.c
+@@ -151,12 +151,12 @@ long str_to_long(const char *n)
+ 	long val;
+ 	char *endptr = NULL;
+ 	if (n == NULL) {
+-		l0g("count string is NULL\n");
++		fprintf(stderr, "count string is NULL\n");
+ 		return LONG_MAX;
+ 	}
+ 	val = strtol(n, &endptr, 10);
+ 	if (*endptr != '\0') {
+-		l0g("count string is not valid\n");
++		fprintf(stderr, "count string is not valid\n");
+ 		return LONG_MAX;
+ 	}
+ 	return val;
+@@ -229,14 +229,14 @@ static int modify_pm_count(const char *u
+ 
+ 	if ((pent = getpwnam(user)) == NULL) {
+ 		ret = -errno;
+-		l0g("could not resolve user %s\n", user);
++		fprintf(stderr, "could not resolve user %s\n", user);
+ 		return ret;
+ 	}
+ 
+ 	if (stat(VAR_RUN_PMT, &sb) < 0) {
+ 		if (errno != ENOENT) {
+ 			ret = -errno;
+-			l0g("unable to stat " VAR_RUN_PMT ": %s\n",
++			fprintf(stderr, "unable to stat " VAR_RUN_PMT ": %s\n",
+ 			    strerror(errno));
+ 			return ret;
+ 		}
+@@ -307,12 +307,12 @@ static int create_var_run(void)
+ 	w4rn("creating " VAR_RUN_PMT);
+ 	if (HX_mkdir(VAR_RUN_PMT, mode) < 0) {
+ 		ret = -errno;
+-		l0g("unable to create " VAR_RUN_PMT ": %s\n", strerror(errno));
++		fprintf(stderr, "unable to create " VAR_RUN_PMT ": %s\n", strerror(errno));
+ 		return ret;
+ 	}
+ 	if (chown(VAR_RUN_PMT, 0, 0) < 0) {
+ 		ret = -errno;
+-		l0g("unable to chown " VAR_RUN_PMT ": %s\n", strerror(errno));
++		fprintf(stderr, "unable to chown " VAR_RUN_PMT ": %s\n", strerror(errno));
+ 		return ret;
+ 	}
+ 
+@@ -322,7 +322,7 @@ static int create_var_run(void)
+ 	 */
+ 	if (chmod(VAR_RUN_PMT, mode) < 0) {
+ 		ret = -errno;
+-		l0g("unable to chmod " VAR_RUN_PMT ": %s\n", strerror(errno));
++		fprintf(stderr, "unable to chmod " VAR_RUN_PMT ": %s\n", strerror(errno));
+ 		return ret;
+ 	}
+ 
+@@ -350,12 +350,12 @@ static int open_and_lock(const char *fil
+ 
+ 	if ((fd = open(filename, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR)) < 0) {
+ 		ret = -errno;
+-		l0g("unable to open %s: %s\n", filename, strerror(errno));
++		fprintf(stderr, "unable to open %s: %s\n", filename, strerror(errno));
+ 		return ret;
+ 	}
+ 	if (fchown(fd, uid, 0) < 0) {
+ 		ret = -errno;
+-		l0g("unable to chown %s: %s\n", filename, strerror(errno));
++		fprintf(stderr, "unable to chown %s: %s\n", filename, strerror(errno));
+ 		return ret;
+ 	}
+ 
+@@ -419,7 +419,7 @@ static long read_current_count(int fd, c
+ 
+ 	if ((ret = read(fd, buf, sizeof(buf))) < 0) {
+ 		ret = -errno;
+-		l0g("read error on %s: %s\n", filename, strerror(errno));
++		fprintf(stderr, "read error on %s: %s\n", filename, strerror(errno));
+ 		close(fd);
+ 		return ret;
+ 	} else if (ret == 0) {
+@@ -427,12 +427,12 @@ static long read_current_count(int fd, c
+ 	} else if (ret < sizeof(buf)) {
+ 		char *p;
+ 		if ((ret = strtol(buf, &p, 0)) >= LONG_MAX || p == buf) {
+-			l0g("parse problem / session count corrupt "
++			fprintf(stderr, "parse problem / session count corrupt "
+ 			    "(overflow), check your refcount file\n");
+ 			return -EOVERFLOW;
+ 		}
+ 	} else if (ret >= sizeof(buf)) {
+-		l0g("session count corrupt (overflow)\n");
++		fprintf(stderr, "session count corrupt (overflow)\n");
+ 		return -EOVERFLOW;
+ 	}
+ 
+@@ -443,7 +443,7 @@ static long read_current_count(int fd, c
+  * write_count -
+  * @fd:		file descriptor to write to
+  * @nv:		new value to write
+- * @filename:	filename, only used for l0g()
++ * @filename:	filename, only used for frpintf()
+  *
+  * Writes @nv as a number in hexadecimal to the start of the file @fd and
+  * truncates the file to the written length.
+@@ -456,7 +456,7 @@ static int write_count(int fd, long nv,
+ 		if (unlink(filename) >= 0)
+ 			return true;
+ 		if (errno != EPERM && errno != EACCES)
+-			l0g("could not unlink %s: %s\n", filename, strerror(errno));
++			fprintf(stderr, "could not unlink %s: %s\n", filename, strerror(errno));
+ 		/*
+ 		 * Fallback to just blanking the file. This can happen when
+ 		 * pmvarrun is called as unprivileged user.
+@@ -468,21 +468,21 @@ static int write_count(int fd, long nv,
+ 
+ 	if ((ret = lseek(fd, 0, SEEK_SET)) != 0) {
+ 		ret = -errno;
+-		l0g("failed to seek in %s: %s\n", filename, strerror(errno));
++		fprintf(stderr, "failed to seek in %s: %s\n", filename, strerror(errno));
+ 		return ret;
+ 	}
+ 
+ 	len = snprintf(buf, sizeof(buf), "0x%lX", nv);
+ 	if ((wrt = write(fd, buf, len)) != len) {
+ 		ret = -errno;
+-		l0g("wrote %d of %d bytes; write error on %s: %s\n",
++		fprintf(stderr, "wrote %d of %d bytes; write error on %s: %s\n",
+ 		    (wrt < 0) ? 0 : wrt, len, filename, strerror(errno));
+ 		return ret;
+ 	}
+ 
+ 	if (ftruncate(fd, len) < 0) {
+ 		ret = -errno;
+-		l0g("truncate failed: %s\n", strerror(errno));
++		fprintf(stderr, "truncate failed: %s\n", strerror(errno));
+ 		return ret;
+ 	}
+ 

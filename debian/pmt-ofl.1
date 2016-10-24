@@ -1,0 +1,27 @@
+.TH pmt\-ofl 1 "2009\-08\-19" "pam_mount" "pam_mount"
+.SH Name
+.PP
+pmt\-ofl - Show processes using directories/files/mountpoints
+.SH Syntax
+.PP
+\fBpmt\-ofl\fP [\fIoptions\fP] \fIpath\fP...
+.SH Options
+.TP
+\fB\-k\fP \fINUM/NAME\fP
+Signal to send (if any).
+.TP
+\fB\-\-help\fP
+Show help message.
+.TP
+\fB\-\-usage\fP
+Display brief usage message.
+.SH Description
+.PP
+All processes are listed that access the given directories,
+files or mountpoints. The process information is read from
+the \fB/proc\fP filesystem.
+.SH Author
+.PP
+This manpage was originally written by Bastian Kleineidam
+<calvin@debian.org> for the Debian distribution of libpam\-mount but
+may be used by others.

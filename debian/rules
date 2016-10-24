@@ -1,0 +1,48 @@
+#!/usr/bin/make -f
+
+export DEB_BUILD_HARDENING=1
+
+%:
+	dh $@
+
+# helper var
+BASE:=$(CURDIR)/debian/libpam-mount
+# Only use libcrypt on Linux systems
+DEB_HOST_ARCH_OS:=$(shell dpkg-architecture -qDEB_HOST_ARCH_OS)
+ifeq ($(DEB_HOST_ARCH_OS),linux)
+EXTRACONF:=--with-cryptsetup
+else
+EXTRACONF:=--without-cryptsetup
+endif
+
+override_dh_auto_configure:
+# regenerate autotool files since we patched Makefile.am
+	./autogen.sh
+# install pam_mount.so in /lib/security; enable selinux install;
+# install DTD for XML configuration
+	dh_auto_configure -- --libdir=/lib --with-selinux --with-dtd $(EXTRACONF)
+
+override_dh_installchangelogs:
+# install custom changelog
+	dh_installchangelogs doc/news.txt
+
+override_dh_auto_install:
+	dh_auto_install
+# install configuration
+	install -m 0644 config/pam_mount.conf.xml $(BASE)/etc/security
+# remove unused encfs 1.3 helper
+	rm -f $(BASE)/sbin/mount.encfs13
+# install pam-auth-update script
+	install -m 0644 debian/pam-auth-update $(BASE)/usr/share/pam-configs/libpam-mount
+# remove var/run directory as it gets created automatically when missing
+	rmdir $(BASE)/var/run/pam_mount
+# remove unneeded libcryptmount.so and libcryptmount.la
+	rm $(BASE)/lib/libcryptmount.so $(BASE)/lib/libcryptmount.la
+
+override_dh_clean:
+# remove generated file
+	dh_clean src/umount.crypt
+
+# use xz for debian binary package compression
+override_dh_builddeb:
+	dh_builddeb -- -Zxz

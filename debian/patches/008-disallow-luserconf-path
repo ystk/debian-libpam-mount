@@ -1,0 +1,14 @@
+Index: libpam-mount-2.14/src/rdconf1.c
+===================================================================
+--- libpam-mount-2.14.orig/src/rdconf1.c	2013-08-31 17:06:43.231704583 +0200
++++ libpam-mount-2.14/src/rdconf1.c	2013-08-31 17:06:58.863425983 +0200
+@@ -825,6 +825,9 @@ static const char *rc_string(xmlNode *no
+ 				config->msg_sessionpw = xstrdup(signed_cast(const char *, node->content));
+ 				break;
+ 			case CMDA_PATH:
++				if (config->level != CONTEXT_GLOBAL)
++					return "Tried to set path from user config: "
++					       "not permitted\n";
+ 				free(config->path);
+ 				config->path = xstrdup(signed_cast(const char *, node->content));
+ 				break;

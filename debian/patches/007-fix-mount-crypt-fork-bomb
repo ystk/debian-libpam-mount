@@ -1,0 +1,23 @@
+Ignore "fstype=crypt" for mount.crypt.
+
+Index: libpam-mount-2.14/src/mtcrypt.c
+===================================================================
+--- libpam-mount-2.14.orig/src/mtcrypt.c	2013-08-27 12:16:34.000000000 +0200
++++ libpam-mount-2.14/src/mtcrypt.c	2013-08-31 17:06:55.495486009 +0200
+@@ -121,8 +121,14 @@ static void mtcr_parse_suboptions(const
+ 			else if (ret < EHD_SECURITY_UNSPEC)
+ 				fprintf(stderr, "Hash \"%s\" is considered "
+ 				        "insecure.\n", value);
+-		} else if (strcmp(key, "fstype") == 0)
+-			mo->fstype = value;
++		} else if (strcmp(key, "fstype") == 0) {
++                    if (strcmp(value, "crypt") == 0) {
++                        fprintf(stderr, "Option \"fstype=crypt\" to mount.crypt ignored.\n");
++                    }
++                    else {
++                        mo->fstype = value;
++                    }
++                }
+ 		else if (strcmp(key, "keyfile") == 0)
+ 			mo->fsk_file = value;
+ 		else if (strcmp(key, "keysize") == 0)

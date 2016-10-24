@@ -1,0 +1,13 @@
+Correct path to original author info.
+
+Index: libpam-mount-2.14~git2+ad53f3559/doc/pmvarrun.8
+===================================================================
+--- libpam-mount-2.14~git2+ad53f3559.orig/doc/pmvarrun.8	2012-07-30 17:53:51.000000000 +0200
++++ libpam-mount-2.14~git2+ad53f3559/doc/pmvarrun.8	2012-08-09 11:54:53.555368711 +0200
+@@ -55,5 +55,5 @@ This manpage was originally written by B
+ <calvin@debian.org> for the Debian distribution of libpam\-mount but
+ may be used by others.
+ .PP
+-See /usr/share/doc/packages/pam_mount/AUTHORS for the list of original authors
++See /usr/share/doc/packages/libpam\-mount/copyright for the list of original authors
+ of pam_mount.

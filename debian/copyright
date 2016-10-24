@@ -1,0 +1,50 @@
+This package was debianized by Bastian Kleineidam <calvin@debian.org>
+on Sat, 10 Aug 2002 20:46:10 +0200.
+
+It was downloaded from http://sourceforge.net/projects/pam-mount
+
+Upstream Authors:
+
+W. Michael Petullo <mike@flyn.org>
+Jan Engelhardt <jengelh [at] gmx de>
+Bastian Kleineidam <calvin [at] debian org>
+
+Copyright:
+
+All source files have appropriate copyright notices in them.
+Basically these copyrights are given:
+Copyright (c) W. Michael Petullo <mike@flyn.org>, 2004
+Copyright (c) Jan Engelhardt <jengelh [at] gmx de>, 2005 - 2009
+Copyright (c) Bastian Kleineidam <calvin [at] debian org>, 2005
+
+License:
+The "pam_mount.so" library and the .c source files to build it are
+free software; you can redistribute it/them and/or modify it under
+the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
+(at your option) any later version.
+
+The "pmvarrun", "mount.crypt", "mount.encfs13" programs, especially
+their .c file which has the "main" function it, can be redistributed
+and/or modified under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 2 of the
+License, or (at your option) any later version.
+
+The program "pmt-ofl" and its source (from the "hxtools" software
+package) are released in the Public Domain.
+
+The program "pmt-fd0ssh" and its source (from the "hxtools" software
+package) are free software; you can redistribute them and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 or 3 of the License.
+
+The license texts are available in the file
+"/usr/share/common-licenses/LGPL-2.1" and
+"/usr/share/common-licenses/LGPL-3".
+The GNU GPL as mentioned in the LGPL3 text is available in the file
+"/usr/share/common-licenses/GPL-3".
+
+The Debian packaging files debian/* are free software; you can
+redistribute them and/or modify it under the terms of the
+GNU General Public License as published by the Free Software Foundation;
+either version 2 or 3 of the License.

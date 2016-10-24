@@ -1,0 +1,2 @@
+# pam_mount.txt is generated from pam_mount.8 which we modified
+patch-system-but-direct-changes-in-diff doc/pam_mount.txt
